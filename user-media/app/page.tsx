@@ -1,14 +1,13 @@
 'use client'
 import { useState, useRef, useEffect, useContext } from "react"
-import { SocketContext } from "./socketProvider";
+import { WSStateContext } from "./socketProvider";
 
 
 export default function Home() {
-  const socket = useContext(SocketContext);
+  const socket = useContext(WSStateContext);
   const [stream, setStream] = useState<MediaStream | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null);
   const [open, setOpen] = useState(true);
-
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -24,14 +23,25 @@ export default function Home() {
     }
   }, [stream]);
 
-  const shareScreen = async () => {
-    if (!socket) alert('Socket not connected');
-
-    if (socket?.readyState !== WebSocket.OPEN) {
-      alert('Socket not connected');
+  useEffect(() => {
+    if (socket?.active) {
+      socket.on('stream', (data) => {
+        const { type } = JSON.parse(data);
+        if (type === 'share-screen') {
+          navigator.mediaDevices.getDisplayMedia({
+            video: { width: 1280, height: 720, frameRate: { ideal: 60, max: 60, min: 30 } }
+          }).then((screenStream) => {
+            setStream(screenStream)
+          })
+        }
+      });
     }
+  }, [socket]);
 
-    socket?.send(JSON.stringify({ type: 'share-screen' }))
+  function shareScreen() {
+    if (socket?.active) {
+      socket.emit('stream', JSON.stringify({ type: 'share-screen' }));
+    }
   }
 
   const onClick = async () => {

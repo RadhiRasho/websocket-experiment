@@ -1,18 +1,21 @@
-'use client';
-import { createContext } from "react";
+'use client'
+import { createContext, useEffect, ReactNode, useState } from 'react';
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client'
 
-export const SocketContext = createContext<WebSocket | null>(null);
+type SocketProviderProps = { children: ReactNode; };
 
-type SocketProviderProps = {
-    children: React.ReactNode
-}
+export const WSStateContext = createContext<Socket | null>(null);
 
-export function SocketProvider({ children }: SocketProviderProps) {
-    const socket = new WebSocket("wss://localhost:8080");
+export function SocketProvider({ children }: SocketProviderProps): JSX.Element {
+    const [ws, setWS] = useState<Socket | null>(null);
 
-    return (
-        <SocketContext.Provider value={socket}>
-            {children}
-        </SocketContext.Provider>
-    )
-}
+    useEffect(() => {
+        const socket = io('wss://localhost:8080/websocket');
+
+        setWS(socket);
+    }, []);
+
+
+    return <WSStateContext.Provider value={ws}>{children}</WSStateContext.Provider>;
+};
