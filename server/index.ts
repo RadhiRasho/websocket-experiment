@@ -1,26 +1,32 @@
-import ws from 'ws';
-import https from 'https';
-import { readFileSync } from 'fs';
+import { createServer, ServerOptions } from "https";
+import { readFileSync } from "fs";
+import { Server } from "socket.io";
 
-const server = https.createServer({
-	key: readFileSync('key.pem'),
-	cert: readFileSync('cert.pem'),
+const options: ServerOptions = {
+	key: readFileSync("./certificates/key.pem"),
+	cert: readFileSync("./certificates/cert.pem"),
+};
+
+const server = createServer(options);
+
+const io = new Server(server, {
+	/* options */
+	cors: {
+		origin: "*",
+	},
 });
-const wss = new ws.Server({ server });
 
-wss.on('connection', (ws) => {
-	console.log('connected');
-
-	ws.on('message', (message) => {
-		console.log('received: %s', message);
+io.on("connection", (socket) => {
+	socket.on("message", (data) => {
+		console.log(data);
+		io.emit("messageResponse", JSON.stringify(JSON.parse(data)));
 	});
 
-	ws.on('stream', (stream) => {
-		console.log('received: %s', stream);
-		ws.emit('stream', stream);
+	socket.on("canvas", (data) => {
+		io.emit("canvas", data);
 	});
 });
 
 server.listen(8080, () => {
-	console.log('Server started on port 8080');
+	console.log("listening on *:8080");
 });
