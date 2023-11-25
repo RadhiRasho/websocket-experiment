@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useContext } from "react";
-import { WSStateContext } from "./socketProvider";
+import { WSStateContext } from "../socketProvider";
 import Chat from "@/components/Chat";
 
 export default function Home() {
@@ -11,6 +11,8 @@ export default function Home() {
 	const [color, setColor] = useState(colors[0]);
 	const [previous, setPrevious] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 	const [size, setSize] = useState(25);
+
+	// implment a function to resize the canvas but keep the current data within it
 
 	function resize() {
 		if (canvasRef.current) {
