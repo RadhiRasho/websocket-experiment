@@ -1,7 +1,7 @@
-import { WSStateContext } from "@/app/socketProvider";
+import { WSStateContext } from "@/providers/SocketProvider";
 import { useContext, useEffect, useState } from "react";
 
-type User = {
+type Message = {
 	name: string;
 	message: string;
 };
@@ -10,7 +10,7 @@ export default function Chat() {
 	const socket = useContext(WSStateContext);
 	const [name, setName] = useState("");
 	const [checkIn, setCheckIn] = useState(false);
-	const [messages, setMessages] = useState<User[]>([]);
+	const [messages, setMessages] = useState<Message[]>([]);
 	const [message, setMessage] = useState("");
 
 	function CheckIn() {
@@ -21,8 +21,7 @@ export default function Chat() {
 
 	useEffect(() => {
 		socket?.on("messageResponse", (data) => {
-			const parsedData: User = JSON.parse(data);
-			console.log(parsedData);
+			const parsedData: Message = JSON.parse(data);
 			setMessages((curr) => [...curr, parsedData]);
 		});
 	}, [socket]);
@@ -63,20 +62,20 @@ export default function Chat() {
 								})}
 							</div>
 							<br />
-							<div className="flex justify-between gap-2 mt-2 h-12 px-2">
-								<input
-									className="text-black text-xl px-2 w-full"
-									type="text"
-									onKeyDown={(e) => {
-										if (e.key === "Enter") sendMessage();
-									}}
-									value={message}
-									onChange={(e) => setMessage(e.target.value)}
-								/>
-								<button className="border rounded-md p-2 hover:bg-gray-800" onClick={sendMessage}>
-									Send
-								</button>
-							</div>
+						</div>
+						<div className="flex justify-between gap-2 my-2 h-12 px-2">
+							<input
+								className="text-black text-xl px-2 w-full rounded-md"
+								type="text"
+								onKeyDown={(e) => {
+									if (e.key === "Enter") sendMessage();
+								}}
+								value={message}
+								onChange={(e) => setMessage(e.target.value)}
+							/>
+							<button className="border rounded-md p-2 hover:bg-gray-800" onClick={sendMessage}>
+								Send
+							</button>
 						</div>
 					</div>
 				</>

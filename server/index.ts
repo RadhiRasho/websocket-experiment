@@ -1,20 +1,29 @@
-import { createServer, ServerOptions } from "https";
 import { readFileSync } from "fs";
 import { Server } from "socket.io";
+import { createSecureServer, SecureServerOptions } from "http2";
 
-const options: ServerOptions = {
-	key: readFileSync("./certificates/key.pem"),
-	cert: readFileSync("./certificates/cert.pem"),
+const options: SecureServerOptions = {
+	key: readFileSync("./key.pem"),
+	cert: readFileSync("./cert.pem"),
 };
 
-const server = createServer(options);
+const server = createSecureServer(options, (req, res) => {
+	res.writeHead(200);
+	res.end("hello world");
+});
 
 const io = new Server(server, {
-	/* options */
 	cors: {
 		origin: "*",
 	},
 });
+
+type Room = {
+	name: string;
+	users: string[];
+};
+
+const rooms: Room[] = [];
 
 io.on("connection", (socket) => {
 	socket.on("message", (data) => {
@@ -24,6 +33,17 @@ io.on("connection", (socket) => {
 
 	socket.on("canvas", (data) => {
 		io.emit("canvas", data);
+	});
+
+	socket.on("createRoom", (data) => {
+		console.log(data);
+		rooms.push(JSON.parse(data));
+		socket.join(JSON.parse(data).name);
+	});
+
+	socket.on("getRooms", (data) => {
+		console.log(data);
+		socket.emit("getRoomsResponse", JSON.stringify({ rooms }));
 	});
 });
 
