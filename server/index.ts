@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
 import { Server } from "socket.io";
 import { createSecureServer, SecureServerOptions } from "http2";
 
