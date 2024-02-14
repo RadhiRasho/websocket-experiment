@@ -8,7 +8,7 @@
 	async function init() {
 		const creds = await Creds();
 		socket = io('wss://localhost:8080', {
-			passphrase: 'Hayam',
+			passphrase: 'HMM',
 			key: creds.key,
 			cert: creds.cert
 		});
