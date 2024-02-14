@@ -43,7 +43,11 @@ export default function Chat() {
 						type="text"
 						onChange={(e) => setName(e.target.value)}
 					/>
-					<button className="border rounded-md p-2 hover:bg-gray-800" onClick={CheckIn}>
+					<button
+						type="button"
+						className="border rounded-md p-2 hover:bg-gray-800"
+						onClick={CheckIn}
+					>
 						Check In
 					</button>
 				</div>
@@ -55,7 +59,7 @@ export default function Chat() {
 							<div className="px-2">
 								{messages.map((item, index) => {
 									return (
-										<li key={index} className={`list-none`}>
+										<li key={`${item.name}-${index}`} className={"list-none"}>
 											{item.name}: {item.message}
 										</li>
 									);
@@ -73,7 +77,11 @@ export default function Chat() {
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
 							/>
-							<button className="border rounded-md p-2 hover:bg-gray-800" onClick={sendMessage}>
+							<button
+								type="button"
+								className="border rounded-md p-2 hover:bg-gray-800"
+								onClick={sendMessage}
+							>
 								Send
 							</button>
 						</div>

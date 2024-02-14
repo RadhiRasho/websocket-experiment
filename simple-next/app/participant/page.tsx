@@ -2,8 +2,8 @@
 import { useContext, useState } from "react";
 import Image from "next/image";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import Chat from "@/components/Chat";
 import { WSStateContext } from "@/providers/SocketProvider";
+import Chat from "@/components/Chat";
 
 export default function View() {
 	const socket = useContext(WSStateContext);
@@ -15,7 +15,17 @@ export default function View() {
 
 	return (
 		<div className="flex justify-between gap-2">
-			<div className="w-7/12">{src && <Image src={src} alt="stuck" title="shit" width={1000} height={1000} />}</div>
+			<div className="w-7/12">
+				{src && (
+					<Image
+						src={src}
+						alt="stuck"
+						title="shit"
+						width={1000}
+						height={1000}
+					/>
+				)}
+			</div>
 			<div className="w-4/12">
 				<Chat />
 			</div>

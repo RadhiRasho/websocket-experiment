@@ -1,15 +1,32 @@
 "use client";
-import { useState, useRef, useEffect, useContext } from "react";
-import Chat from "@/components/Chat";
+
 import { WSStateContext } from "@/providers/SocketProvider";
+import {
+	useState,
+	useRef,
+	useEffect,
+	useContext,
+	type PointerEvent,
+} from "react";
+import Chat from "./Chat";
 
 export default function Canvas() {
 	const socket = useContext(WSStateContext);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
-	const colors: string[] = ["red", "green", "blue", "yellow", "violet", "orange"];
+	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+	const colors: string[] = [
+		"red",
+		"green",
+		"blue",
+		"yellow",
+		"violet",
+		"orange",
+	];
 	const [color, setColor] = useState(colors[0]);
-	const [previous, setPrevious] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+	const [previous, setPrevious] = useState<{ x: number; y: number }>({
+		x: 0,
+		y: 0,
+	});
 	const [size, setSize] = useState(25);
 
 	function resize() {
@@ -20,7 +37,7 @@ export default function Canvas() {
 	}
 
 	useEffect(() => {
-		setCtx(canvasRef?.current?.getContext("2d")!);
+		if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
 
 		window.addEventListener("resize", resize);
 		resize();
@@ -30,7 +47,7 @@ export default function Canvas() {
 		};
 	}, []);
 
-	function get_coords(e: { clientX: any; clientY: any }) {
+	function get_coords(e: PointerEvent<HTMLCanvasElement>) {
 		const { clientX, clientY } = e;
 		const current = canvasRef.current?.getBoundingClientRect();
 		let x = 0;
@@ -44,7 +61,7 @@ export default function Canvas() {
 		return { x, y };
 	}
 
-	function mouseDown(e: any) {
+	function mouseDown(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = get_coords(e);
 
 		if (ctx) {
@@ -65,7 +82,7 @@ export default function Canvas() {
 		}
 	}, [color, ctx, size]);
 
-	function pointerMove(e: any) {
+	function pointerMove(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = get_coords(e);
 		if (ctx && e.buttons === 1) {
 			ctx.strokeStyle = color;
@@ -80,16 +97,14 @@ export default function Canvas() {
 	}
 
 	function clear() {
-		if (ctx) {
-			ctx.clearRect(0, 0, canvasRef.current?.width!, canvasRef.current?.height!);
+		if (ctx && canvasRef.current) {
+			ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 		}
 	}
 
 	useEffect(() => {
 		if (canvasRef.current) socket?.emit("canvas", ctx?.canvas.toDataURL());
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [socket, ctx?.canvas.toDataURL()]);
+	}, [socket?.emit, ctx?.canvas.toDataURL]);
 
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-start gap-2 p-4">
@@ -97,15 +112,16 @@ export default function Canvas() {
 				<div className="grid grid-cols-7">
 					{colors.map((indexColor) => (
 						<button
+							type="button"
 							key={indexColor}
-							className={`rounded-full w-12 h-full text-4xl text-black`}
+							className={"rounded-full w-12 h-full text-4xl text-black"}
 							style={{ backgroundColor: indexColor }}
 							onClick={() => setColor(indexColor)}
 						>
 							{indexColor === color && "✓"}
 						</button>
 					))}
-					<button className="rounded-full p-2" onClick={clear}>
+					<button type="button" className="rounded-full p-2" onClick={clear}>
 						clear
 					</button>
 				</div>

@@ -9,10 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "socket.io": "^4.7.2",
-    "typescript": "^5.2.2"
-  },
   "devDependencies": {
     "@types/node": "^20.9.0",
     "nodemon": "^3.0.1",
