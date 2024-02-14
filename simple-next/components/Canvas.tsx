@@ -65,7 +65,7 @@ export default function Canvas() {
 		const coords = get_coords(e);
 
 		if (ctx) {
-			ctx.fillStyle = color;
+			ctx.fillStyle = color ?? "black";
 			ctx.beginPath();
 			ctx.arc(coords.x, coords.y, size / 2, 0, 2 * Math.PI);
 			ctx.fill();
@@ -76,7 +76,7 @@ export default function Canvas() {
 
 	useEffect(() => {
 		if (ctx) {
-			ctx.strokeStyle = color;
+			ctx.strokeStyle = color ?? "black";
 			ctx.lineWidth = size;
 			ctx.lineCap = "round";
 		}
@@ -85,7 +85,7 @@ export default function Canvas() {
 	function pointerMove(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = get_coords(e);
 		if (ctx && e.buttons === 1) {
-			ctx.strokeStyle = color;
+			ctx.strokeStyle = color ?? "black";
 			ctx.lineWidth = size;
 			ctx.lineCap = "round";
 			ctx?.beginPath();

@@ -28,5 +28,15 @@
                 "./*"
             ]
         }
-    }
+    },
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        "providers/SocketProvider.tss"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }

@@ -14,5 +14,9 @@
     "typescript": "^5",
     "@biomejs/biome": "1.5.3",
     "@types/node": "^20"
+  },
+  "scripts": {
+    "svelte:dev": "bun run --cwd=simple-svelte dev",
+    "next:dev": "bun run --workspace=simple-next dev"
   }
 }
