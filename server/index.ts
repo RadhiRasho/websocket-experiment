@@ -5,6 +5,7 @@ import { createSecureServer, SecureServerOptions } from "http2";
 const options: SecureServerOptions = {
 	key: readFileSync("./key.pem"),
 	cert: readFileSync("./cert.pem"),
+	passphrase: "Hayam",
 };
 
 const server = createSecureServer(options, (req, res) => {
