@@ -20,5 +20,7 @@ export function SocketProvider({ children }: SocketProviderProps): JSX.Element {
 		setWS(socket);
 	}, []);
 
-	return <WSStateContext.Provider value={ws}>{children}</WSStateContext.Provider>;
+	return (
+		<WSStateContext.Provider value={ws}>{children}</WSStateContext.Provider>
+	);
 }

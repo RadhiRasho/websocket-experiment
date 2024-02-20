@@ -4,12 +4,10 @@
   "description": "A simple websocket experiment",
   "workspaces": [
     "server/*",
-    "simple-svelte/*",
-    "simple-next/*"
+    "next-app/*"
   ],
   "dependencies": {
-    "socket.io": "^4.7.4",
-    "socket.io-client": "^4.7.4"
+    "socket.io": "^4.7.4"
   },
   "devDependencies": {
     "typescript": "^5",
@@ -17,7 +15,7 @@
     "@types/node": "^20"
   },
   "scripts": {
-    "svelte:dev": "bun run --cwd=simple-svelte dev",
-    "next:dev": "bun run --workspace=simple-next dev"
+    "next:dev": "bun run --workspace=next-app dev",
+    "postinstall": "bun i --cwd=next-app"
   }
 }

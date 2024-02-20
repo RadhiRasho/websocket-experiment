@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, type ReactNode } from "react";
 
 type User = {
 	id: string;
@@ -9,7 +9,7 @@ type User = {
 export const UserStateContext = createContext<User | null>(null);
 
 type UserProviderProps = {
-	children: React.ReactNode;
+	children: ReactNode;
 };
 
 export default function UserProvider({ children }: UserProviderProps) {
