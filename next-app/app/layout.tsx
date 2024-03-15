@@ -1,7 +1,9 @@
+import Navbar from "@/components/navbar";
+import { SocketProvider } from "@/providers/SocketProvider";
+import UserProvider from "@/providers/UserProvider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { SocketProvider } from "@/providers/SocketProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +20,14 @@ export default function RootLayout({ children }: Props) {
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<SocketProvider>{children}</SocketProvider>
+				<UserProvider>
+					<SocketProvider>
+						<div>
+							<Navbar />
+							{children}
+						</div>
+					</SocketProvider>
+				</UserProvider>
 			</body>
 		</html>
 	);

@@ -1,4 +1,5 @@
 import { WSStateContext } from "@/providers/SocketProvider";
+import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
 type Message = {
@@ -12,19 +13,19 @@ export default function Chat() {
 	const [checkIn, setCheckIn] = useState(false);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [message, setMessage] = useState("");
+	const { room } = useParams<{ room: string }>();
 
 	function CheckIn() {
-		socket?.emit("join", JSON.stringify({ name }));
-
 		setCheckIn(!checkIn);
 	}
 
 	useEffect(() => {
+		socket?.emit("joinRoom", JSON.stringify({ name: room }));
 		socket?.on("messageResponse", (data) => {
 			const parsedData: Message = JSON.parse(data);
 			setMessages((curr) => [...curr, parsedData]);
 		});
-	}, [socket]);
+	}, [room, socket]);
 
 	function sendMessage() {
 		socket?.emit("message", JSON.stringify({ message, name }));

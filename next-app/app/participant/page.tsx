@@ -1,9 +1,9 @@
 "use client";
-import { useContext, useState } from "react";
-import Image from "next/image";
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import { WSStateContext } from "@/providers/SocketProvider";
 import Chat from "@/components/Chat";
+import { WSStateContext } from "@/providers/SocketProvider";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import Image from "next/image";
+import { useContext, useState } from "react";
 
 export default function View() {
 	const socket = useContext(WSStateContext);

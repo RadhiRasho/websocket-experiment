@@ -39,3 +39,6 @@ certificates
 
 # Svelte
 .svelte-kit
+
+# VS Code
+.vscode

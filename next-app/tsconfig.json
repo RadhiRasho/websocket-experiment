@@ -1,5 +1,4 @@
 {
-    "extends": "../tsconfig.json",
     "compilerOptions": {
         "target": "es5",
         "lib": [
@@ -10,6 +9,7 @@
         "allowJs": true,
         "skipLibCheck": true,
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "noEmit": true,
         "esModuleInterop": true,
         "module": "esnext",
@@ -26,8 +26,11 @@
         "paths": {
             "@/*": [
                 "./*"
+            ],
+            "#/*": [
+                "../*"
             ]
-        }
+        },
     },
     "include": [
         "next-env.d.ts",
