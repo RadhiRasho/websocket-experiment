@@ -37,7 +37,9 @@ export default function Canvas() {
 	}
 
 	useEffect(() => {
-		if (canvasRef.current) setCtx(canvasRef.current.getContext("2d"));
+		if (canvasRef.current) {
+			setCtx(canvasRef.current.getContext("2d"));
+		}
 
 		window.addEventListener("resize", resize);
 		resize();
@@ -47,7 +49,7 @@ export default function Canvas() {
 		};
 	}, []);
 
-	function get_coords(e: PointerEvent<HTMLCanvasElement>) {
+	function getCoords(e: PointerEvent<HTMLCanvasElement>) {
 		const { clientX, clientY } = e;
 		const current = canvasRef.current?.getBoundingClientRect();
 		let x = 0;
@@ -62,7 +64,7 @@ export default function Canvas() {
 	}
 
 	function mouseDown(e: PointerEvent<HTMLCanvasElement>) {
-		const coords = get_coords(e);
+		const coords = getCoords(e);
 
 		if (ctx) {
 			ctx.fillStyle = color ?? "black";
@@ -83,7 +85,7 @@ export default function Canvas() {
 	}, [color, ctx, size]);
 
 	function pointerMove(e: PointerEvent<HTMLCanvasElement>) {
-		const coords = get_coords(e);
+		const coords = getCoords(e);
 		if (ctx && e.buttons === 1) {
 			ctx.strokeStyle = color ?? "black";
 			ctx.lineWidth = size;
@@ -103,7 +105,9 @@ export default function Canvas() {
 	}
 
 	useEffect(() => {
-		if (canvasRef.current) socket?.emit("canvas", ctx?.canvas.toDataURL());
+		if (canvasRef.current) {
+			socket?.emit("canvas", ctx?.canvas.toDataURL());
+		}
 	}, [socket?.emit, ctx?.canvas.toDataURL]);
 
 	return (

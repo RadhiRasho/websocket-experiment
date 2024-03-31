@@ -1,7 +1,7 @@
+import type { Room } from "@/types/Room";
 import { readFileSync } from "node:fs";
-import { type SecureServerOptions, createSecureServer } from "http2";
+import { createSecureServer, type SecureServerOptions } from "node:http2";
 import { Server } from "socket.io";
-import type { Room } from "../types";
 
 const options: SecureServerOptions = {
 	key: readFileSync("./key.pem"),

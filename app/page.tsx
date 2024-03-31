@@ -2,9 +2,9 @@
 
 import { useSocketContext } from "@/providers/SocketProvider";
 import { useUserContext } from "@/providers/UserProvider";
+import type { Room } from "@/types/Room";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { Room } from "#/types";
 
 export default function Home() {
 	const socket = useSocketContext();

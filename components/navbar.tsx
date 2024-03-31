@@ -11,7 +11,9 @@ export default function Navbar() {
 		router.push("/login");
 	}
 
-	if (!userContext?.user) return null;
+	if (!userContext?.user) {
+		return null;
+	}
 
 	return (
 		<nav className="flex justify-between items-center p-4 bg-black text-white border-b-2">

@@ -34,25 +34,7 @@ export default function Chat() {
 
 	return (
 		<div className="flex flex-col justify-between items-center h-full">
-			{!checkIn ? (
-				<div className="flex justify-between gap-2 m-2 h-12">
-					<input
-						onKeyDown={(e) => {
-							if (e.key === "Enter") CheckIn();
-						}}
-						className="text-black text-xl px-2 w-64"
-						type="text"
-						onChange={(e) => setName(e.target.value)}
-					/>
-					<button
-						type="button"
-						className="border rounded-md p-2 hover:bg-gray-800"
-						onClick={CheckIn}
-					>
-						Check In
-					</button>
-				</div>
-			) : (
+			{checkIn ? (
 				<>
 					<h1>Chat</h1>
 					<div className="flex justify-between flex-col items-start w-full h-full">
@@ -73,7 +55,9 @@ export default function Chat() {
 								className="text-black text-xl px-2 w-full rounded-md"
 								type="text"
 								onKeyDown={(e) => {
-									if (e.key === "Enter") sendMessage();
+									if (e.key === "Enter") {
+										sendMessage();
+									}
 								}}
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
@@ -88,6 +72,26 @@ export default function Chat() {
 						</div>
 					</div>
 				</>
+			) : (
+				<div className="flex justify-between gap-2 m-2 h-12">
+					<input
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								CheckIn();
+							}
+						}}
+						className="text-black text-xl px-2 w-64"
+						type="text"
+						onChange={(e) => setName(e.target.value)}
+					/>
+					<button
+						type="button"
+						className="border rounded-md p-2 hover:bg-gray-800"
+						onClick={CheckIn}
+					>
+						Check In
+					</button>
+				</div>
 			)}
 		</div>
 	);

@@ -1,6 +1,6 @@
 "use client";
 import {
-	ReactNode,
+	type ReactNode,
 	createContext,
 	useContext,
 	useEffect,
@@ -14,7 +14,7 @@ type SocketProviderProps = { children: ReactNode };
 export const WSStateContext = createContext<Socket | null>(null);
 
 export function SocketProvider({ children }: SocketProviderProps): JSX.Element {
-	const [ws, setWS] = useState<Socket | null>(null);
+	const [ws, setWs] = useState<Socket | null>(null);
 
 	useEffect(() => {
 		const socket = io("wss://localhost:8080", {
@@ -25,7 +25,7 @@ export function SocketProvider({ children }: SocketProviderProps): JSX.Element {
 			console.log("connected");
 		});
 
-		setWS(socket);
+		setWs(socket);
 	}, []);
 
 	return (
