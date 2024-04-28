@@ -1,5 +1,6 @@
 "use client";
 
+import Chat from "@/components/Chat";
 import { useUserContext } from "@/providers/UserProvider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +31,10 @@ export default function Login() {
 					>
 						Login
 					</button>
+
+					<br />
 				</div>
+				<Chat />
 			</div>
 		</main>
 	);

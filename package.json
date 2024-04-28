@@ -1,35 +1,30 @@
 {
-  "name": "websocket-experiment",
-  "version": "0.0.1",
-  "description": "A simple websocket experiment",
-  "dependencies": {
-    "@types/bun": "^1.0.8",
-    "hono": "^4.1.0",
-    "next": "^14",
-    "react": "latest",
-    "react-dom": "latest",
-    "socket.io": "^4",
-    "socket.io-client": "^4"
-  },
-  "devDependencies": {
-    "typescript": "latest",
-    "@biomejs/biome": "latest",
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "autoprefixer": "^10",
-    "eslint": "^8",
-    "eslint-config-next": "^14",
-    "postcss": "^8",
-    "tailwindcss": "latest"
-  },
-  "scripts": {
-    "dev": "next dev --turbo",
-    "server": "bun run server/index.ts",
-    "hono:server": "bun run server/hono.ts",
-    "biome": "biome check --apply-unsafe ."
-  },
-  "trustedDependencies": [
-    "@biomejs/biome"
-  ]
+	"name": "websocket-experiment",
+	"version": "0.0.1",
+	"description": "A simple websocket experiment",
+	"dependencies": {
+		"@types/bun": "^1.0.8",
+		"hono": "^4.1.0",
+		"next": "^14",
+		"react": "latest",
+		"react-dom": "latest"
+	},
+	"devDependencies": {
+		"typescript": "latest",
+		"@biomejs/biome": "latest",
+		"@types/node": "latest",
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"autoprefixer": "^10",
+		"eslint": "^8",
+		"eslint-config-next": "^14",
+		"postcss": "^8",
+		"tailwindcss": "latest"
+	},
+	"scripts": {
+		"dev": "next dev --turbo",
+		"server": "bun run --watch server/index.ts",
+		"biome": "biome check --apply-unsafe ."
+	},
+	"trustedDependencies": ["@biomejs/biome"]
 }

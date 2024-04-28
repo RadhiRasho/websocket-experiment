@@ -1,27 +1,33 @@
+"use client";
 import { hc } from "hono/client";
 import type { ReactNode } from "react";
-import { createContext, useCallback, useEffect, useState } from "react";
-import type { WebSocketApp } from "../server/hono";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { WebSocketApp } from "../server";
 
-export const WSStateContext = createContext<WebSocket | null>(null);
+export const HonoSocketContext = createContext<WebSocket | null>(null);
 
-type SocketProviderProps = { children: ReactNode };
+type HonoSocketProps = { children: ReactNode };
 
-export function SocketProvider({ children }: SocketProviderProps) {
+const client = hc<WebSocketApp>("ws://localhost:8080");
+
+export function HonoSocketProvider({ children }: HonoSocketProps) {
 	const [ws, setWs] = useState<WebSocket | null>(null);
 
-	const init = useCallback(async () => {
-		const client = hc<WebSocketApp>("http://localhost:8080");
-		const socket = client.ws.$ws("/ws");
+	useEffect(() => {
+		const socket = client.ws.$ws(0);
+		socket.onopen = () => {
+			console.log("connected to server");
+		};
 
 		setWs(socket);
 	}, []);
 
-	useEffect(() => {
-		init();
-	}, [init]);
-
 	return (
-		<WSStateContext.Provider value={ws}>{children}</WSStateContext.Provider>
+		<HonoSocketContext.Provider value={ws}>
+			{children}
+		</HonoSocketContext.Provider>
 	);
 }
+
+export const useHonoSocket = () => useContext(HonoSocketContext);
+export const $get = client.ws.$get;

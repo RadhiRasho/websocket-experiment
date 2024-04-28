@@ -1,5 +1,5 @@
 import Navbar from "@/components/navbar";
-import { SocketProvider } from "@/providers/SocketProvider";
+import { HonoSocketProvider } from "@/providers/HonoSocket";
 import UserProvider from "@/providers/UserProvider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -21,12 +21,12 @@ export default function RootLayout({ children }: Props) {
 		<html lang="en">
 			<body className={inter.className}>
 				<UserProvider>
-					<SocketProvider>
-						<div>
+					<HonoSocketProvider>
+						<div className="h-full max-h-screen">
 							<Navbar />
 							{children}
 						</div>
-					</SocketProvider>
+					</HonoSocketProvider>
 				</UserProvider>
 			</body>
 		</html>

@@ -1,17 +1,22 @@
 "use client";
 import Chat from "@/components/Chat";
-import { WSStateContext } from "@/providers/SocketProvider";
+import { useHonoSocket } from "@/providers/HonoSocket";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function View() {
-	const socket = useContext(WSStateContext);
+	const socket = useHonoSocket();
 	const [src, setSrc] = useState<string | StaticImport>();
 
-	socket?.on("canvas", (data) => {
-		setSrc(data);
-	});
+	useEffect(() => {
+		if (socket?.readyState === WebSocket.OPEN) {
+			socket.onmessage = (event) => {
+				const data: { type: string; data: string } = JSON.parse(event.data);
+				setSrc(data.data);
+			};
+		}
+	}, [socket]);
 
 	return (
 		<div className="flex justify-between gap-2">

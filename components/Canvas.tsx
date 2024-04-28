@@ -1,17 +1,11 @@
 "use client";
 
-import { WSStateContext } from "@/providers/SocketProvider";
-import {
-	type PointerEvent,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useHonoSocket } from "@/providers/HonoSocket";
+import { type PointerEvent, useEffect, useRef, useState } from "react";
 import Chat from "./Chat";
 
 export default function Canvas() {
-	const socket = useContext(WSStateContext);
+	const socket = useHonoSocket();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 	const colors: string[] = [
@@ -21,6 +15,7 @@ export default function Canvas() {
 		"yellow",
 		"violet",
 		"orange",
+		"black",
 	];
 	const [color, setColor] = useState(colors[0]);
 	const [previous, setPrevious] = useState<{ x: number; y: number }>({
@@ -105,20 +100,28 @@ export default function Canvas() {
 	}
 
 	useEffect(() => {
-		if (canvasRef.current) {
-			socket?.emit("canvas", ctx?.canvas.toDataURL());
+		if (ctx?.canvas && socket?.emit) {
+			socket.send(
+				JSON.stringify({
+					type: "canvas",
+					data: ctx.canvas.toDataURL(),
+				}),
+			);
 		}
-	}, [socket?.emit, ctx?.canvas.toDataURL]);
+	}, [socket?.emit, ctx?.canvas.toDataURL, ctx?.canvas, socket]);
 
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-start gap-2 p-4">
 			<div className="flex justify-between items-center gap-10">
-				<div className="grid grid-cols-7">
+				<div className="grid grid-cols-8">
 					{colors.map((indexColor) => (
 						<button
 							type="button"
+							title={indexColor}
 							key={indexColor}
-							className={"rounded-full w-12 h-full text-4xl text-black"}
+							className={`rounded-full w-12 h-full text-4xl ${
+								indexColor === "black" ? "text-white" : "text-black"
+							} border border-white`}
 							style={{ backgroundColor: indexColor }}
 							onClick={() => setColor(indexColor)}
 						>

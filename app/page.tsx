@@ -1,13 +1,13 @@
 "use client";
 
-import { useSocketContext } from "@/providers/SocketProvider";
+import { useHonoSocket } from "@/providers/HonoSocket";
 import { useUserContext } from "@/providers/UserProvider";
 import type { Room } from "@/types/Room";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-	const socket = useSocketContext();
+	const socket = useHonoSocket();
 	const userContext = useUserContext();
 	const [rooms, setRooms] = useState<Room[]>([]);
 	const [createName, setCreateName] = useState("");
@@ -19,24 +19,43 @@ export default function Home() {
 		if (!userContext?.user) {
 			router.push("/login");
 		}
-		socket?.emit("getRooms");
-		socket?.on("getRoomsResponse", (data) => setRooms(data.rooms));
+
+		if (socket?.readyState === WebSocket.OPEN) {
+			socket.send("getRooms");
+			socket.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				if (data.type === "getRoomsResponse") {
+					if (data.success === false) {
+						setJoinError(data);
+						return;
+					}
+					setRooms(data.rooms);
+				}
+			};
+		}
 	}, [userContext?.user, router, socket, socket?.emit]);
 
 	function createRoom() {
-		socket?.emit("createRoom", { name: createName });
+		if (socket?.readyState === WebSocket.OPEN) {
+			const createEvent = JSON.stringify({
+				type: "createRoom",
+				data: { name: createName },
+			});
+			socket?.send(createEvent);
 
-		socket?.emit("getRooms");
-		socket?.on("getRoomsResponse", (data) => {
-			if (data.success === false) {
-				setCreateError(data);
-				return;
-			}
-			setRooms(data.rooms);
-		});
+			socket.send("getRooms");
+			socket.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				if (data.success === false) {
+					setCreateError(data);
+					return;
+				}
+				setRooms(data.rooms);
+			};
 
-		router.push(`/drawer/${createName}`);
-		setCreateName("");
+			router.push(`/drawer/${createName}`);
+			setCreateName("");
+		}
 	}
 
 	return (
