@@ -3,9 +3,9 @@
 	"version": "0.0.1",
 	"description": "A simple websocket experiment",
 	"dependencies": {
-		"@types/bun": "^1.0.8",
-		"hono": "^4.1.0",
-		"next": "^14",
+		"@types/bun": "^1.1.9",
+		"hono": "^4.6.1",
+		"next": "^14.2.9",
 		"react": "latest",
 		"react-dom": "latest"
 	},
@@ -15,16 +15,14 @@
 		"@types/node": "latest",
 		"@types/react": "latest",
 		"@types/react-dom": "latest",
-		"autoprefixer": "^10",
-		"eslint": "^8",
-		"eslint-config-next": "^14",
-		"postcss": "^8",
+		"autoprefixer": "^10.4.20",
+		"postcss": "^8.4.45",
 		"tailwindcss": "latest"
 	},
 	"scripts": {
 		"dev": "next dev --turbo",
 		"server": "bun run --watch server/index.ts",
-		"biome": "biome check --apply-unsafe ."
+		"biome": "biome check --write ."
 	},
 	"trustedDependencies": ["@biomejs/biome"]
 }

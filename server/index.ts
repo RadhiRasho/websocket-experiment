@@ -10,9 +10,6 @@ const ws = app.get(
 	"/ws",
 	upgradeWebSocket((c) => {
 		return {
-			onOpen(_event, ws) {
-				console.log("hello");
-			},
 			onMessage: (evt, ws) => eventHandler(evt, ws),
 		};
 	}),

@@ -4,21 +4,23 @@ export function eventHandler<T>(
 	event: MessageEvent<WSMessageReceive>,
 	ws: WSContext,
 ) {
-	const data: { type: string; data: any } = JSON.parse(event?.data.toString());
+	if (typeof event !== "object") {
+		return "No Strings";
+	}
 
-	console.log(data);
+	const { type, data }: MessageEvent<WSMessageReceive> = event;
 
-	switch (data.type) {
+	switch (type) {
 		case "message": {
-			const event = JSON.stringify({
-				type: "messageResponse",
-				data: JSON.stringify(data.data),
+			const messageEvent = new MessageEvent("message", {
+				data,
 			});
-			console.log(event);
-			ws?.send(event);
+
+			ws?.send(JSON.stringify(messageEvent));
 			break;
 		}
 		case "join":
 			break;
+		default:
 	}
 }

@@ -1,7 +1,13 @@
 "use client";
 
 import { useHonoSocket } from "@/providers/HonoSocket";
-import { type PointerEvent, useEffect, useRef, useState } from "react";
+import {
+	type PointerEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import Chat from "./Chat";
 
 export default function Canvas() {
@@ -24,12 +30,12 @@ export default function Canvas() {
 	});
 	const [size, setSize] = useState(25);
 
-	function resize() {
+	const resize = useCallback(() => {
 		if (canvasRef.current) {
 			canvasRef.current.width = window.innerWidth - 500;
 			canvasRef.current.height = window.innerHeight - 150;
 		}
-	}
+	}, []);
 
 	useEffect(() => {
 		if (canvasRef.current) {
@@ -42,7 +48,7 @@ export default function Canvas() {
 		return () => {
 			window.removeEventListener("resize", resize);
 		};
-	}, []);
+	}, [resize]);
 
 	function getCoords(e: PointerEvent<HTMLCanvasElement>) {
 		const { clientX, clientY } = e;
