@@ -5,7 +5,7 @@
 	"dependencies": {
 		"@types/bun": "^1.1.9",
 		"hono": "^4.6.1",
-		"next": "^14.2.9",
+		"next": "^14.2.10",
 		"react": "latest",
 		"react-dom": "latest"
 	},
@@ -22,7 +22,8 @@
 	"scripts": {
 		"dev": "next dev --turbo -p 8080",
 		"server": "bun run --watch server/index.ts",
-		"biome": "biome check --write ."
+		"format": "biome check --write .",
+		"check": "biome check"
 	},
 	"trustedDependencies": ["@biomejs/biome"]
 }
