@@ -1,5 +1,5 @@
 "use client";
-import type { User, UserContext as uContext } from "@/types/User";
+import type { User, UserContext as uContext } from "@/types/types";
 import { type ReactNode, createContext, useContext, useState } from "react";
 
 export const UserContext = createContext<uContext | null>(null);

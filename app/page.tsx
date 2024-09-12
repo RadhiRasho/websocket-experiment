@@ -2,7 +2,7 @@
 
 import { useHonoSocket } from "@/providers/HonoSocket";
 import { useUserContext } from "@/providers/UserProvider";
-import type { Room } from "@/types/Room";
+import type { Room } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 

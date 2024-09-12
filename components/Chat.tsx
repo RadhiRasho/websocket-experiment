@@ -1,34 +1,30 @@
-import { useHonoSocket } from "@/providers/HonoSocket";
-import { useParams } from "next/navigation";
+"use client";
+import {
+	$getMessages,
+	$postMessages,
+	useHonoSocket,
+} from "@/providers/HonoSocket";
+import type { Message } from "@/types/types";
 import { useEffect, useState } from "react";
-
-type Message = {
-	name: string;
-	message: string;
-};
 
 export default function Chat() {
 	const socket = useHonoSocket();
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [message, setMessage] = useState("");
-	const { room } = useParams<{ room: string }>();
+	const [refetch, setRefetch] = useState<boolean | null>(null);
 
 	useEffect(() => {
-		if (socket?.readyState === WebSocket.OPEN) {
-			socket?.send(JSON.stringify({ type: "joinRoom", data: { room } }));
+		async function getData() {
+			if (refetch || refetch == null) {
+				const response = await $getMessages();
+				const ms = (await response.json()) satisfies Message[];
 
-			socket.onmessage = (event) => {
-				const data: { type: string; name: string; message: string } =
-					JSON.parse(event.data);
-				if (data.type === "messageResponse") {
-					setMessages((prev) => [
-						...prev,
-						{ name: data.name, message: data.message },
-					]);
-				}
-			};
+				setMessages(ms);
+			}
+			setRefetch(false);
 		}
-	}, [room, socket]);
+		getData();
+	}, [refetch]);
 
 	function sendMessage() {
 		if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -37,11 +33,14 @@ export default function Chat() {
 		}
 
 		if (socket.readyState === WebSocket.OPEN) {
-			const messageEvent = JSON.stringify({
-				type: "message",
-				data: { message, room },
+			$postMessages({
+				json: {
+					id: messages.length + 1,
+					text: message,
+				},
 			});
-			socket.send(messageEvent);
+
+			setRefetch(true);
 		}
 	}
 
@@ -52,10 +51,10 @@ export default function Chat() {
 				<div className="flex justify-between flex-col items-start w-full h-full">
 					<div className="border-t border-gray-500 w-full flex flex-col justify-between">
 						<div className="px-2">
-							{messages.map((item, index) => {
+							{messages?.map((item, index) => {
 								return (
-									<li key={`${item.name}-${index}`} className={"list-none"}>
-										{item.name}: {item.message}
+									<li key={`${item.id}-${index}`} className={"list-none"}>
+										{item.id}: {item.text}
 									</li>
 								);
 							})}

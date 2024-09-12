@@ -20,7 +20,7 @@
 		"tailwindcss": "latest"
 	},
 	"scripts": {
-		"dev": "next dev --turbo",
+		"dev": "next dev --turbo -p 8080",
 		"server": "bun run --watch server/index.ts",
 		"biome": "biome check --write ."
 	},
