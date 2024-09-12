@@ -1,9 +1,9 @@
 "use client";
+import { BACKEND_DEV_URL } from "@/types/Constants";
 import { hc } from "hono/client";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { AppType } from "../server";
-import { BACKEND_DEV_URL } from "@/types/Constants";
 
 export const HonoSocketContext = createContext<WebSocket | null>(null);
 
