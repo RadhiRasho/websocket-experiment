@@ -24,8 +24,8 @@ export default function View() {
 				{src && (
 					<Image
 						src={src}
-						alt="stuck"
 						title="shit"
+						alt="stuck"
 						width={1000}
 						height={1000}
 					/>

@@ -31,10 +31,8 @@ export default function Login() {
 					>
 						Login
 					</button>
-
 					<br />
 				</div>
-				<Chat />
 			</div>
 		</main>
 	);
