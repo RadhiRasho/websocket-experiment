@@ -1,6 +1,6 @@
-const FRONTEND_DEV_URL = "http://localhost:8080";
-const BACKEND_DEV_URL = "http://localhost:3000";
-const BACKEND_DEV_WS_URL = "ws://localhost:3000/ws";
+const FRONTEND_DEV_URL = "http://localhost:3000";
+const BACKEND_DEV_URL = "http://localhost:8080";
+const BACKEND_DEV_WS_URL = "ws://localhost:8080/ws";
 
 export const publishActions = {
 	UPDATE_CHAT: "UPDATE_CHAT",

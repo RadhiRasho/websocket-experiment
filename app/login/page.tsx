@@ -1,6 +1,5 @@
 "use client";
 
-import Chat from "@/components/Chat";
 import { useUserContext } from "@/providers/UserProvider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,6 +7,7 @@ import { useState } from "react";
 export default function Login() {
 	const router = useRouter();
 	const userContext = useUserContext();
+
 	const [name, setName] = useState("");
 
 	function login() {

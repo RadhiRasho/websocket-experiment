@@ -2,9 +2,10 @@
 
 import { useHonoSocket } from "@/providers/HonoSocket";
 import { useUserContext } from "@/providers/UserProvider";
-import type { Room } from "@/types/types";
+import type { Room, User } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useReadLocalStorage } from "usehooks-ts";
 
 export default function Home() {
 	const socket = useHonoSocket();
@@ -13,11 +14,12 @@ export default function Home() {
 	const [createName, setCreateName] = useState("");
 	const [createError, setCreateError] = useState<Error | null>(null);
 	const [joinError, setJoinError] = useState<Error | null>(null);
+	const user = useReadLocalStorage<User>("user");
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!userContext?.user) {
-			router.push("/login");
+		if (user !== null) {
+			userContext?.Login(user.name, user.role, user.id);
 		}
 
 		if (socket?.readyState === WebSocket.OPEN) {
@@ -33,7 +35,7 @@ export default function Home() {
 				}
 			};
 		}
-	}, [userContext?.user, router, socket, socket?.emit]);
+	}, [userContext, user, socket, socket?.emit]);
 
 	function createRoom() {
 		if (socket?.readyState === WebSocket.OPEN) {

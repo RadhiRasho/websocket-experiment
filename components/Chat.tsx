@@ -4,13 +4,11 @@ import {
 	$postMessages,
 	useHonoSocket,
 } from "@/providers/HonoSocket";
-import { useUserContext } from "@/providers/UserProvider";
 import type { Message } from "@/types/types";
 import { useEffect, useState } from "react";
 
 export default function Chat() {
 	const socket = useHonoSocket();
-	const { user } = useUserContext();
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [message, setMessage] = useState("");
 	const [refetch, setRefetch] = useState<boolean | null>(null);

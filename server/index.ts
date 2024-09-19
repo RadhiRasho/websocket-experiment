@@ -11,8 +11,9 @@ const { upgradeWebSocket, websocket } = createBunWebSocket();
 
 const server = Bun.serve({
 	fetch: app.fetch,
-	websocket,
 	reusePort: true,
+	port: 8080,
+	websocket,
 });
 
 const messages: Message[] = [];
@@ -68,13 +69,13 @@ const messageRoute = app
 				onOpen: (_, ws) => {
 					const rawWs = ws.raw as ServerWebSocket;
 					rawWs.subscribe(topic);
-					console.log(
-						`WebSocket server opened and subscribed to topic '${topic}'`,
-					);
+
+					console.log(`WebSocket server opened and subscribed to topic '${topic}'`);
 				},
 				onClose: (_, ws) => {
 					const rawWs = ws.raw as ServerWebSocket;
 					rawWs.unsubscribe(topic);
+
 					console.log(
 						`WebSocket server closed and unsubscribed from topic '${topic}'`,
 					);
@@ -86,6 +87,7 @@ const messageRoute = app
 export default {
 	fetch: app.fetch,
 	reusePort: true,
+	port: 8080,
 	websocket,
 };
 export type AppType = typeof messageRoute;
