@@ -16,7 +16,7 @@ export default function Login() {
 	}
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center gap-2 p-4">
+		<main className="flex flex-col items-center justify-center gap-2 p-4">
 			<div className="flex gap-2 flex-col items-start">
 				<div className="flex gap-2">
 					<input

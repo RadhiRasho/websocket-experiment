@@ -105,19 +105,22 @@ export default function Canvas() {
 		}
 	}
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		if (ctx?.canvas && socket?.emit) {
-			socket.send(
-				JSON.stringify({
-					type: "canvas",
-					data: ctx.canvas.toDataURL(),
-				}),
-			);
+		if (socket?.readyState === WebSocket.OPEN) {
+			if (ctx?.canvas) {
+				socket.send(
+					JSON.stringify({
+						type: "canvas",
+						data: ctx.canvas.toDataURL(),
+					}),
+				);
+			}
 		}
-	}, [socket?.emit, ctx?.canvas.toDataURL, ctx?.canvas, socket]);
+	}, [socket?.send, ctx?.canvas?.toDataURL(), ctx?.canvas, socket]);
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-start gap-2 p-4">
+		<>
 			<div className="flex justify-between items-center gap-10">
 				<div className="grid grid-cols-8">
 					{colors.map((indexColor) => (
@@ -151,17 +154,15 @@ export default function Canvas() {
 					<span>100</span>
 				</div>
 			</div>
-			<div className="flex justify-between gap-2">
+			<div className="flex justify-between gap-2 min-h-[80vh] h-full max-h-min">
 				<canvas
 					onPointerMove={pointerMove}
 					onPointerDown={mouseDown}
 					className="flex border border-gray-500"
 					ref={canvasRef}
 				/>
-				<div className="border border-gray-500 w-96 max-h-screen">
-					<Chat />
-				</div>
+				<Chat />
 			</div>
-		</main>
+		</>
 	);
 }

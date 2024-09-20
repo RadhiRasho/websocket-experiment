@@ -10,7 +10,7 @@ type Props = {
 
 export default function Home({ params }: Props) {
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-start gap-2 p-4">
+		<main className="flex flex-col items-center justify-start gap-2 p-4">
 			<Canvas />
 		</main>
 	);

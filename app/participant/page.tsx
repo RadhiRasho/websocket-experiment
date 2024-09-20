@@ -11,15 +11,15 @@ export default function View() {
 
 	useEffect(() => {
 		if (socket?.readyState === WebSocket.OPEN) {
-			socket.onmessage = (event) => {
-				const data: { type: string; data: string } = JSON.parse(event.data);
-				setSrc(data.data);
+			console.log(socket.readyState);
+			socket.onmessage = (evt) => {
+				console.log(evt);
 			};
 		}
-	}, [socket]);
+	}, [socket?.onmessage, socket]);
 
 	return (
-		<div className="flex justify-between gap-2">
+		<main className="flex flex-col items-center justify-start gap-2 p-4">
 			<div className="w-7/12">
 				{src && (
 					<Image
@@ -31,9 +31,7 @@ export default function View() {
 					/>
 				)}
 			</div>
-			<div className="w-4/12 h-full">
-				<Chat />
-			</div>
-		</div>
+			<Chat />
+		</main>
 	);
 }

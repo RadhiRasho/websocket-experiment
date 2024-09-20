@@ -32,7 +32,7 @@ const messageRoute = app
 		const message: Message = {
 			id,
 			text,
-			date: `${currentDateTime.toLocaleDateString()} ${currentDateTime.toLocaleTimeString()}`,
+			date: `${currentDateTime.toDateString()} ${currentDateTime.toDateString()}`,
 		};
 
 		const data: DataToSend = {
@@ -73,6 +73,13 @@ const messageRoute = app
 					console.log(
 						`WebSocket server opened and subscribed to topic '${topic}'`,
 					);
+				},
+				onMessage(evt, ws) {
+					const data = evt.data;
+
+					if (JSON.parse(data.toString()).type === "canvas") {
+						ws.send(JSON.stringify(evt.data));
+					}
 				},
 				onClose: (_, ws) => {
 					const rawWs = ws.raw as ServerWebSocket;

@@ -21,12 +21,11 @@ export default function UserProvider({ children }: UserProviderProps) {
 
 	function Login(name: string, role: string, id?: string) {
 		const data = {
-			id: id ? `${id}` : `${name}-${Math.random() * 1000}`,
+			id: id ? `${id}` : `${name}-${Math.random() * 100}`,
 			name,
 			role,
 		};
 
-		console.log(data);
 		if (value) {
 			if (value.id !== null) {
 				setUser(data);

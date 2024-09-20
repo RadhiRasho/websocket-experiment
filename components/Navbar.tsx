@@ -12,20 +12,12 @@ export default function Navbar() {
 		router.push("/login");
 	}
 
-	if (!userContext?.user) {
-		return null;
-	}
+	if (!userContext) return null;
 
 	return (
-		<nav className="flex justify-between items-center p-4 bg-black text-white border-b-2">
+		<nav className="flex justify-between items-center p-2 bg-black text-white border-b-2 min-h-20 max-h-min">
 			<Link href={"/"} className="text-2xl font-bold">
 				Clone.IO
-			</Link>
-			<Link className="text-lg" href={"/participant"}>
-				Participant
-			</Link>
-			<Link className="text-lg" href={"/drawer"}>
-				Drawer
 			</Link>
 			{userContext?.user && (
 				<div className="flex justify-between items-center min-w-36 text-lg">

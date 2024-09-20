@@ -29,3 +29,8 @@ export type Room = {
 	name: string;
 	users: string[];
 };
+
+export type CanvasMessage = {
+	type: "canvas";
+	src: string;
+};

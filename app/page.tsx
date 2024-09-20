@@ -58,8 +58,31 @@ export default function Home() {
 		}
 	}
 
+	function joinRoom() {
+		if (socket?.readyState === WebSocket.OPEN) {
+			const createEvent = JSON.stringify({
+				type: "joinRoom",
+				data: { name: createName },
+			});
+			socket?.send(createEvent);
+
+			socket.send("getRooms");
+			socket.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				if (data.success === false) {
+					setCreateError(data);
+					return;
+				}
+				setRooms(data.rooms);
+			};
+
+			router.push(`/participant/${createName}`);
+			setCreateName("");
+		}
+	}
+
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-start gap-2 p-4">
+		<main className="flex flex-col items-center justify-start gap-2 p-4">
 			<div className="flex gap-2 flex-col items-start">
 				<div className="flex gap-2">
 					<input
@@ -84,6 +107,7 @@ export default function Home() {
 					<button
 						type="button"
 						className="border rounded-md p-2 w-40 hover:bg-gray-800"
+						onClick={joinRoom}
 					>
 						Join
 					</button>

@@ -12,14 +12,15 @@ export default function Chat() {
 	const socket = useHonoSocket();
 	const [message, setMessage] = useState("");
 	const { data, isSuccess, refetch } = useQuery<Message[]>({
-		queryKey: ["messages"],
+		queryKey: ["messages", socket?.pong],
 		initialData: [],
+
 		queryFn: async () => {
 			const data = await $getMessages();
 
 			return data.json();
 		},
-		refetchOnWindowFocus: true,
+		refetchOnWindowFocus: "always",
 		refetchIntervalInBackground: true,
 		// refetchInterval: 5000,
 	});
@@ -60,12 +61,12 @@ export default function Chat() {
 	}
 
 	return (
-		<div className="flex flex-col justify-between items-center h-full max-h-screen">
+		<div className="flex flex-col justify-between items-center min-h-[80vh] h-full max-h-[80vh] border border-gray-500">
 			<h1>Chat</h1>
-			<div className="flex justify-between flex-col items-start w-full h-full max-h-screen">
+			<div className="flex justify-between flex-col items-start">
 				<div className="border-t border-gray-500 w-full flex flex-col justify-between">
-					<div className="px-2 h-96 max-h-full overflow-auto">
-						<ol ref={messagesRef} className="overflow-auto">
+					<div className="p-2 h-full max-h-[72vh] overflow-auto">
+						<ol ref={messagesRef}>
 							{data?.map((item, index) => {
 								return (
 									<li key={`${item.id}-${index}`} className={"list-none"}>
