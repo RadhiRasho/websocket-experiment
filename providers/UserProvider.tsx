@@ -19,15 +19,18 @@ export default function UserProvider({ children }: UserProviderProps) {
 		},
 	);
 
-	function Login(name: string, role: string, id?: number) {
+	function Login(name: string, role: string, id?: string) {
 		const data = {
 			id: id ? `${id}` : `${name}-${Math.random() * 1000}`,
 			name,
 			role,
 		};
 
-		if (value?.id !== null) {
-			setUser(data);
+		console.log(data);
+		if (value) {
+			if (value.id !== null) {
+				setUser(data);
+			}
 		} else {
 			setUser(data);
 			setValue(data);
@@ -40,7 +43,7 @@ export default function UserProvider({ children }: UserProviderProps) {
 	}
 
 	return (
-		<UserContext.Provider value={{ user, Login, Logout }}>
+		<UserContext.Provider value={{ user: value ?? null, Login, Logout }}>
 			{children}
 		</UserContext.Provider>
 	);

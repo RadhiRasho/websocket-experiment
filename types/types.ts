@@ -20,10 +20,10 @@ export type User = {
 };
 
 export type UserContext = {
-		user: User | null;
-		Login: (name: string, role: string, id?: string) => void;
-		Logout: () => void;
-	};
+	user: User | null;
+	Login: (name: string, role: string, id?: string) => void;
+	Logout: () => void;
+};
 
 export type Room = {
 	name: string;

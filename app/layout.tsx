@@ -1,6 +1,4 @@
-import Navbar from "@/components/navbar";
-import { HonoSocketProvider } from "@/providers/HonoSocket";
-import UserProvider from "@/providers/UserProvider";
+import Providers from "@/providers/Providers";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -19,15 +17,8 @@ type Props = {
 export default function RootLayout({ children }: Props) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
-				<UserProvider>
-					<HonoSocketProvider>
-						<div className="h-full max-h-screen">
-							<Navbar />
-							{children}
-						</div>
-					</HonoSocketProvider>
-				</UserProvider>
+			<body className={`${inter.className} !pb-0`}>
+				<Providers>{children}</Providers>
 			</body>
 		</html>
 	);

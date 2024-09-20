@@ -1,7 +1,6 @@
 "use client";
 
 import { useHonoSocket } from "@/providers/HonoSocket";
-import { useUserContext } from "@/providers/UserProvider";
 import type { Room, User } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,7 +8,6 @@ import { useReadLocalStorage } from "usehooks-ts";
 
 export default function Home() {
 	const socket = useHonoSocket();
-	const userContext = useUserContext();
 	const [rooms, setRooms] = useState<Room[]>([]);
 	const [createName, setCreateName] = useState("");
 	const [createError, setCreateError] = useState<Error | null>(null);
@@ -18,8 +16,8 @@ export default function Home() {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (user !== null) {
-			userContext?.Login(user.name, user.role, user.id);
+		if (!user) {
+			router.push("login");
 		}
 
 		if (socket?.readyState === WebSocket.OPEN) {
@@ -35,7 +33,7 @@ export default function Home() {
 				}
 			};
 		}
-	}, [userContext, user, socket, socket?.emit]);
+	}, [router, user, socket, socket?.emit]);
 
 	function createRoom() {
 		if (socket?.readyState === WebSocket.OPEN) {

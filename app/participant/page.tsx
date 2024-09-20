@@ -31,7 +31,7 @@ export default function View() {
 					/>
 				)}
 			</div>
-			<div className="w-4/12">
+			<div className="w-4/12 h-full">
 				<Chat />
 			</div>
 		</div>
