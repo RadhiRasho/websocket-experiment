@@ -1,16 +1,13 @@
 "use client";
 import type { User, UserContext as uContext } from "@/types/types";
-import { type ReactNode, createContext, useContext, useState } from "react";
+import { type ReactNode, createContext, useContext } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 export const UserContext = createContext<uContext | null>(null);
 
-type UserProviderProps = {
-	children: ReactNode;
-};
+type UserProviderProps = { children: ReactNode };
 
 export default function UserProvider({ children }: UserProviderProps) {
-	const [user, setUser] = useState<User | null>(null);
 	const [value, setValue, removeValue] = useLocalStorage<User | null>(
 		"user",
 		null,
@@ -26,18 +23,11 @@ export default function UserProvider({ children }: UserProviderProps) {
 			role,
 		};
 
-		if (value) {
-			if (value.id !== null) {
-				setUser(data);
-			}
-		} else {
-			setUser(data);
+		if (!value) {
 			setValue(data);
 		}
 	}
-
 	function Logout() {
-		setUser(null);
 		removeValue();
 	}
 

@@ -22,6 +22,7 @@ const topic = "chat-room";
 app.use(cors({ origin: FRONTEND_DEV_URL }));
 
 const messageRoute = app
+	.get("/", (c) => c.text("Hello, World!"))
 	.get("/messages", (c) => {
 		return c.json(messages);
 	})
@@ -76,6 +77,8 @@ const messageRoute = app
 				},
 				onMessage(evt, ws) {
 					const data = evt.data;
+
+					console.log(data);
 
 					if (JSON.parse(data.toString()).type === "canvas") {
 						ws.send(JSON.stringify(evt.data));

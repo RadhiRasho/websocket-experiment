@@ -2,6 +2,7 @@
 import { useUserContext } from "@/providers/UserProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function Navbar() {
 	const userContext = useUserContext();
@@ -11,8 +12,6 @@ export default function Navbar() {
 		userContext?.Logout();
 		router.push("/login");
 	}
-
-	if (!userContext) return null;
 
 	return (
 		<nav className="flex justify-between items-center p-2 bg-black text-white border-b-2 min-h-20 max-h-min">
@@ -31,6 +30,9 @@ export default function Navbar() {
 					</button>
 				</div>
 			)}
+			<div>
+				<ThemeToggle />
+			</div>
 		</nav>
 	);
 }

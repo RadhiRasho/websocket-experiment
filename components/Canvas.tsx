@@ -31,19 +31,19 @@ export default function Canvas() {
 	const [size, setSize] = useState(25);
 
 	const resize = useCallback(() => {
-		if (canvasRef.current) {
-			canvasRef.current.width = window.innerWidth - 500;
-			canvasRef.current.height = window.innerHeight - 150;
+		const container = document.getElementById("canvasContainer");
+		if (canvasRef.current && container) {
+			canvasRef.current.width = container?.clientWidth;
+			canvasRef.current.height = container?.clientHeight;
 		}
 	}, []);
 
 	useEffect(() => {
 		if (canvasRef.current) {
+			resize();
 			setCtx(canvasRef.current.getContext("2d"));
+			window.addEventListener("resize", resize);
 		}
-
-		window.addEventListener("resize", resize);
-		resize();
 
 		return () => {
 			window.removeEventListener("resize", resize);
@@ -128,7 +128,7 @@ export default function Canvas() {
 							type="button"
 							title={indexColor}
 							key={indexColor}
-							className={`rounded-full w-12 h-full text-4xl ${
+							className={`rounded-full w-[2.6rem] h-full text-4xl ${
 								indexColor === "black" ? "text-white" : "text-black"
 							} border border-white`}
 							style={{ backgroundColor: indexColor }}
@@ -154,13 +154,17 @@ export default function Canvas() {
 					<span>100</span>
 				</div>
 			</div>
-			<div className="flex justify-between gap-2 min-h-[80vh] h-full max-h-min">
-				<canvas
-					onPointerMove={pointerMove}
-					onPointerDown={mouseDown}
-					className="flex border border-gray-500"
-					ref={canvasRef}
-				/>
+			<div className="flex justify-between w-full max-h-[80vh] gap-2">
+				<div id="canvasContainer" className="w-full max-w-[90%]">
+					<div>
+						<canvas
+							onPointerMove={pointerMove}
+							onPointerDown={mouseDown}
+							className="border border-gray-500 bg-black"
+							ref={canvasRef}
+						/>
+					</div>
+				</div>
 				<Chat />
 			</div>
 		</>

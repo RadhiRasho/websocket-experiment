@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useHonoSocket } from "@/providers/HonoSocket";
 import type { Room, User } from "@/types/types";
 import { useRouter } from "next/navigation";
@@ -11,6 +13,7 @@ export default function Home() {
 	const [rooms, setRooms] = useState<Room[]>([]);
 	const [createName, setCreateName] = useState("");
 	const [createError, setCreateError] = useState<Error | null>(null);
+	const [joinRoomName, setJoinRoomName] = useState("");
 	const [joinError, setJoinError] = useState<Error | null>(null);
 	const user = useReadLocalStorage<User>("user");
 	const router = useRouter();
@@ -60,11 +63,11 @@ export default function Home() {
 
 	function joinRoom() {
 		if (socket?.readyState === WebSocket.OPEN) {
-			const createEvent = JSON.stringify({
+			const joinEvent = JSON.stringify({
 				type: "joinRoom",
-				data: { name: createName },
+				data: { name: joinRoomName },
 			});
-			socket?.send(createEvent);
+			socket?.send(joinEvent);
 
 			socket.send("getRooms");
 			socket.onmessage = (event) => {
@@ -76,41 +79,32 @@ export default function Home() {
 				setRooms(data.rooms);
 			};
 
-			router.push(`/participant/${createName}`);
+			router.push(`/participant/${joinRoomName}`);
 			setCreateName("");
 		}
 	}
 
 	return (
 		<main className="flex flex-col items-center justify-start gap-2 p-4">
-			<div className="flex gap-2 flex-col items-start">
-				<div className="flex gap-2">
-					<input
-						className="text-black text-xl px-2 w-full rounded-md"
+			<div className="grid gap-2 max-w-sm w-full">
+				<div className="grid gap-2 grid-flow-col">
+					<Input
 						onChange={(e) => setCreateName(e.target.value)}
 						placeholder="Create A Room"
 					/>
-					<button
-						type="button"
-						onClick={createRoom}
-						className="border rounded-md p-2 w-40 hover:bg-gray-800"
-					>
+					<Button type="button" onClick={createRoom}>
 						Create
-					</button>
+					</Button>
 				</div>
 				{createError && <span>{createError.message}</span>}
-				<div className="flex gap-2">
-					<input
-						className="text-black text-xl px-2 w-full rounded-md"
+				<div className="grid gap-2  grid-flow-col">
+					<Input
 						placeholder="Join A Room"
+						onChange={(e) => setJoinRoomName(e.target.value)}
 					/>
-					<button
-						type="button"
-						className="border rounded-md p-2 w-40 hover:bg-gray-800"
-						onClick={joinRoom}
-					>
+					<Button type="button" onClick={joinRoom}>
 						Join
-					</button>
+					</Button>
 				</div>
 				{joinError && <span>{joinError.message}</span>}
 			</div>
@@ -119,13 +113,9 @@ export default function Home() {
 			<div className="grid grid-flow-row grid-cols-4 gap-2">
 				{rooms?.length > 0 &&
 					rooms.map((room) => (
-						<button
-							key={room.name}
-							type="button"
-							className="border rounded-md p-2 hover:bg-gray-800"
-						>
+						<Button key={room.name} type="button">
 							{room.name}
-						</button>
+						</Button>
 					))}
 			</div>
 		</main>

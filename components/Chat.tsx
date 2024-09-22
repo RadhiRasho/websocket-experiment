@@ -7,6 +7,8 @@ import {
 import type { Message } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export default function Chat() {
 	const socket = useHonoSocket();
@@ -61,11 +63,11 @@ export default function Chat() {
 	}
 
 	return (
-		<div className="flex flex-col justify-between items-center min-h-[80vh] h-full max-h-[80vh] border border-gray-500">
+		<div className="flex flex-col justify-between items-center min-h-[80vh] h-full max-h-min border border-gray-500">
 			<h1>Chat</h1>
 			<div className="flex justify-between flex-col items-start">
 				<div className="border-t border-gray-500 w-full flex flex-col justify-between">
-					<div className="p-2 h-full max-h-[72vh] overflow-auto">
+					<div className="p-2 overflow-auto">
 						<ol ref={messagesRef}>
 							{data?.map((item, index) => {
 								return (
@@ -77,9 +79,8 @@ export default function Chat() {
 						</ol>
 					</div>
 				</div>
-				<div className="flex justify-between gap-2 my-2 h-12 px-2">
-					<input
-						className="text-black text-xl px-2 w-full rounded-md"
+				<div className="flex justify-between gap-2 m-2">
+					<Input
 						type="text"
 						onKeyDown={(e) => {
 							if (e.key === "Enter") sendMessage();
@@ -87,13 +88,9 @@ export default function Chat() {
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
 					/>
-					<button
-						type="button"
-						className="border rounded-md p-2 hover:bg-gray-800"
-						onClick={sendMessage}
-					>
+					<Button type="button" onClick={sendMessage}>
 						Send
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
