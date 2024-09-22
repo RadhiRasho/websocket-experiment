@@ -15,7 +15,7 @@ export default function Navbar() {
 
 	return (
 		<nav className="flex justify-between items-center p-2 bg-black text-white border-b-2 min-h-20 max-h-min">
-			<Link href={"/"} className="text-2xl font-bold">
+			<Link href={"/"} as={"/"} className="text-2xl font-bold">
 				Clone.IO
 			</Link>
 			{userContext?.user && (

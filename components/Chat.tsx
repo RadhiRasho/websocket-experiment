@@ -4,7 +4,8 @@ import {
 	$postMessages,
 	useHonoSocket,
 } from "@/providers/HonoSocket";
-import type { Message } from "@/types/types";
+import { publishActions } from "@/types/Constants";
+import type { DataToSend, Message } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
@@ -14,17 +15,13 @@ export default function Chat() {
 	const socket = useHonoSocket();
 	const [message, setMessage] = useState("");
 	const { data, isSuccess, refetch } = useQuery<Message[]>({
-		queryKey: ["messages", socket?.pong],
+		queryKey: ["messages"],
 		initialData: [],
-
 		queryFn: async () => {
 			const data = await $getMessages();
 
 			return data.json();
 		},
-		refetchOnWindowFocus: "always",
-		refetchIntervalInBackground: true,
-		// refetchInterval: 5000,
 	});
 	const messagesRef = useRef<HTMLOListElement>(null);
 
@@ -61,6 +58,20 @@ export default function Chat() {
 			});
 		}
 	}
+
+	if (!socket) {
+		return <div>Connecting...</div>;
+	}
+
+	// socket.onmessage = async (event) => {
+	// 	const data: DataToSend = JSON.parse(event.data) satisfies DataToSend;
+	// 	if (data.action === publishActions.UPDATE_CHAT) {
+	// 		await refetch();
+	// 		messagesRef.current?.lastElementChild?.scrollIntoView({
+	// 			behavior: "smooth",
+	// 		});
+	// 	}
+	// };
 
 	return (
 		<div className="flex flex-col justify-between items-center min-h-[80vh] h-full max-h-min border border-gray-500">

@@ -1,37 +1,52 @@
 "use client";
 import Chat from "@/components/Chat";
 import { useHonoSocket } from "@/providers/HonoSocket";
-import type { StaticImport } from "next/dist/shared/lib/get-img-props";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function View() {
 	const socket = useHonoSocket();
-	const [src, setSrc] = useState<string | StaticImport>();
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const [base64Image, setBase64Image] = useState<string>("");
 
 	useEffect(() => {
-		if (socket?.readyState === WebSocket.OPEN) {
-			console.log(socket.readyState);
-			socket.onmessage = (evt) => {
-				console.log(evt);
+		if (canvasRef.current) {
+			const ctx = canvasRef.current.getContext("2d");
+			if (ctx) {
+				const img = new Image();
+				img.src = base64Image;
+				img.onload = () => {
+					if (!canvasRef.current) return;
+
+					canvasRef.current.width = img.width;
+					canvasRef.current.height = img.height;
+
+					// Draw the image onto the canvas
+					ctx.clearRect(0, 0, img.width, img.height);
+					ctx.drawImage(img, 0, 0, img.width, img.height);
+				};
+			}
+		}
+	}, [base64Image]);
+
+	useEffect(() => {
+		if (socket) {
+			socket.onmessage = (event) => {
+				setBase64Image(event.data);
 			};
 		}
-	}, [socket?.onmessage, socket]);
+	}, [socket]);
 
 	return (
 		<main className="flex flex-col items-center justify-start gap-2 p-4">
-			<div className="w-7/12">
-				{src && (
-					<Image
-						src={src}
-						title="shit"
-						alt="stuck"
-						width={1000}
-						height={1000}
+			<div className="flex justify-between w-full max-h-[80vh] gap-2">
+				<div id="canvasContainer" className="w-full max-w-[90%]">
+					<canvas
+						className="border border-gray-500 bg-black h-full w-full"
+						ref={canvasRef}
 					/>
-				)}
+				</div>
+				<Chat />
 			</div>
-			<Chat />
 		</main>
 	);
 }

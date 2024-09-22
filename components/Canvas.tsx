@@ -108,16 +108,13 @@ export default function Canvas() {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (socket?.readyState === WebSocket.OPEN) {
-			if (ctx?.canvas) {
+			if (ctx?.canvas && socket?.send) {
 				socket.send(
-					JSON.stringify({
-						type: "canvas",
-						data: ctx.canvas.toDataURL(),
-					}),
+					JSON.stringify({ type: "canvas", data: ctx.canvas.toDataURL() }),
 				);
 			}
 		}
-	}, [socket?.send, ctx?.canvas?.toDataURL(), ctx?.canvas, socket]);
+	}, [socket?.emit, ctx?.canvas?.toDataURL(), ctx?.canvas, socket]);
 
 	return (
 		<>

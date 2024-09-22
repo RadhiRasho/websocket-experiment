@@ -76,13 +76,9 @@ const messageRoute = app
 					);
 				},
 				onMessage(evt, ws) {
-					const data = evt.data;
+					const rawWs = ws.raw as ServerWebSocket;
 
-					console.log(data);
-
-					if (JSON.parse(data.toString()).type === "canvas") {
-						ws.send(JSON.stringify(evt.data));
-					}
+					rawWs.publish(topic, JSON.stringify(evt.data));
 				},
 				onClose: (_, ws) => {
 					const rawWs = ws.raw as ServerWebSocket;

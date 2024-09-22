@@ -16,10 +16,11 @@ export function HonoSocketProvider({ children }: HonoSocketProps) {
 
 	useEffect(() => {
 		const socket = client.ws.$ws();
+
 		socket.onopen = () => {
 			console.log("Websocket connected");
+			setWs(socket);
 		};
-		setWs(socket);
 	}, []);
 
 	return (
@@ -29,7 +30,6 @@ export function HonoSocketProvider({ children }: HonoSocketProps) {
 	);
 }
 
-// export client;
 export const useHonoSocket = () => useContext(HonoSocketContext);
 export const $getMessages = () => client.messages.$get();
 export const $postMessages = (Data: { json: { id: number; text: string } }) =>
