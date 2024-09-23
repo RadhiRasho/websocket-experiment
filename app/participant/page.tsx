@@ -1,7 +1,7 @@
 "use client";
 import Chat from "@/components/Chat";
 import { useSocket } from "@/providers/Socket";
-import { publishActions, type DataToSend } from "@/types/types";
+import { type DataToSend, publishActions } from "@/types/types";
 import { useEffect, useRef, useState } from "react";
 
 export default function View() {

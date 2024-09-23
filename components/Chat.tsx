@@ -59,7 +59,6 @@ export default function Chat() {
 		return <div>Connecting...</div>;
 	}
 
-
 	useEffect(() => {
 		if ("on" in socket) {
 			socket.on("message", async (event) => {

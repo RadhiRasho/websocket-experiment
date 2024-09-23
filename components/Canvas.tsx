@@ -30,8 +30,7 @@ export default function Canvas() {
 		y: 0,
 	});
 	const [size, setSize] = useState(25);
-	    const previousDataUrlRef = useRef<string | null>(null);
-
+	const previousDataUrlRef = useRef<string | null>(null);
 
 	const resize = useCallback(() => {
 		const container = document.getElementById("canvasContainer");
@@ -108,40 +107,39 @@ export default function Canvas() {
 		}
 	}
 
-	 useEffect(() => {
-			if (socket?.ws?.readyState === WebSocket.OPEN) {
-				const sendCanvasData = () => {
-					if (ctx?.canvas && socket?.send) {
-						const currentDataUrl = ctx.canvas.toDataURL();
-						if (currentDataUrl !== previousDataUrlRef.current) {
-							const data: DataToSend = {
-								type: "UPDATE_CANVAS",
-								data: currentDataUrl,
-							};
-							socket.send(JSON.stringify(data));
-							previousDataUrlRef.current = currentDataUrl;
-						}
+	useEffect(() => {
+		if (socket?.ws?.readyState === WebSocket.OPEN) {
+			const sendCanvasData = () => {
+				if (ctx?.canvas && socket?.send) {
+					const currentDataUrl = ctx.canvas.toDataURL();
+					if (currentDataUrl !== previousDataUrlRef.current) {
+						const data: DataToSend = {
+							type: "UPDATE_CANVAS",
+							data: currentDataUrl,
+						};
+						socket.send(JSON.stringify(data));
+						previousDataUrlRef.current = currentDataUrl;
 					}
-					requestAnimationFrame(sendCanvasData);
-				};
-
-				const observer = new MutationObserver(sendCanvasData);
-				if (ctx?.canvas) {
-					observer.observe(ctx.canvas, {
-						attributes: true,
-						childList: true,
-						subtree: true,
-					});
 				}
+				requestAnimationFrame(sendCanvasData);
+			};
 
-				sendCanvasData(); // Start the loop
-
-				return () => {
-					observer.disconnect();
-				};
+			const observer = new MutationObserver(sendCanvasData);
+			if (ctx?.canvas) {
+				observer.observe(ctx.canvas, {
+					attributes: true,
+					childList: true,
+					subtree: true,
+				});
 			}
-		}, [socket?.send, ctx?.canvas, socket?.ws?.readyState]);
 
+			sendCanvasData(); // Start the loop
+
+			return () => {
+				observer.disconnect();
+			};
+		}
+	}, [socket?.send, ctx?.canvas, socket?.ws?.readyState]);
 
 	return (
 		<>

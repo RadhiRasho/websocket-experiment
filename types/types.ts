@@ -1,4 +1,3 @@
-
 export const FRONTEND_DEV_URL = "http://localhost:3000";
 export const BACKEND_DEV_URL = "http://localhost:8080";
 export const BACKEND_DEV_WS_URL = "ws://localhost:8080/ws";

@@ -1,5 +1,5 @@
+import { type Static, t } from "elysia";
 import { publishActions } from "./types";
-import { t, type Static } from "elysia";
 
 export const MessageSchema = t.Object({
 	id: t.Number(),
