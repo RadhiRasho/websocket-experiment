@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { type ReactNode, useState } from "react";
-import { HonoSocketProvider } from "./HonoSocket";
+import { SocketProvider } from "./Socket";
 import ThemeProvider from "./ThemeProvider";
 import UserProvider from "./UserProvider";
 
@@ -22,12 +22,12 @@ export default function Providers({
 				forcedTheme={"dark"}
 			>
 				<UserProvider>
-					<HonoSocketProvider>
+					<SocketProvider>
 						<div className="h-full max-h-screen">
 							<Navbar />
 							{children}
 						</div>
-					</HonoSocketProvider>
+					</SocketProvider>
 				</UserProvider>
 				<ReactQueryDevtools
 					buttonPosition="bottom-left"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useHonoSocket } from "@/providers/HonoSocket";
+import { useSocket } from "@/providers/Socket";
 import {
 	type PointerEvent,
 	useCallback,
@@ -11,7 +11,7 @@ import {
 import Chat from "./Chat";
 
 export default function Canvas() {
-	const socket = useHonoSocket();
+	const socket = useSocket();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 	const colors: string[] = [

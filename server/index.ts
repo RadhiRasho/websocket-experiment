@@ -1,33 +1,33 @@
 import { FRONTEND_DEV_URL, publishActions } from "@/types/Constants";
 import type { DataToSend, Message } from "@/types/types";
-import type { ServerWebSocket } from "bun";
-import { Hono } from "hono";
-import { createBunWebSocket } from "hono/bun";
-import { cors } from "hono/cors";
-
-const app = new Hono();
-
-const { upgradeWebSocket, websocket } = createBunWebSocket();
-
-const server = Bun.serve({
-	fetch: app.fetch,
-	reusePort: true,
-	port: 8080,
-	websocket,
-});
+import { cors } from "@elysiajs/cors";
+import { Elysia } from "elysia";
 
 const messages: Message[] = [];
 const topic = "chat-room";
 
-app.use(cors({ origin: FRONTEND_DEV_URL }));
+const app = new Elysia()
+	.use(cors({ origin: FRONTEND_DEV_URL }))
+	.ws("/ws", {
+		open(ws) {
+			ws.subscribe(topic);
 
-const messageRoute = app
-	.get("/", (c) => c.text("Hello, World!"))
-	.get("/messages", (c) => {
-		return c.json(messages);
+			console.log(`WebSocket server opened and subscribed to topic '${topic}'`);
+		},
+		message(ws, message) {
+			ws.publish(topic, JSON.stringify(message));
+		},
+		close(ws, code, message) {
+			ws.unsubscribe(topic);
+			console.log(
+				`WebSocket server closed and unsubscribed from topic '${topic}'`,
+			);
+		},
 	})
-	.post("/messages", async (c) => {
-		const { id, text } = await c.req.json();
+	.get("/", (c) => "Hello, World!")
+	.get("/messages", () => messages)
+	.post("/messages", async ({ request, server }) => {
+		const { id, text } = await request.json();
 		const currentDateTime = new Date();
 
 		const message: Message = {
@@ -42,15 +42,19 @@ const messageRoute = app
 		};
 
 		messages.push(message);
-		server.publish(topic, JSON.stringify(data));
-		return c.json({ ok: true }, 200);
+		server?.publish(topic, JSON.stringify(data));
+		return { ok: true };
 	})
-	.delete("/messages/:id{[0-9]+}", async (c) => {
-		const messageId = Number.parseInt(c.req.param("id"));
+	.delete("/messages", async ({ set, request, server }) => {
+		const body = await request.json();
+
+		const messageId = Number.parseInt(body.id);
+
 		const index = messages.findIndex((message) => message.id === messageId);
 
 		if (index === -1 || messages[index] === undefined) {
-			return c.json({ ok: false, error: "Message not found" }, 404);
+			set.status = 404;
+			return { ok: false, error: "Message not found" };
 		}
 
 		const data: DataToSend = {
@@ -59,43 +63,10 @@ const messageRoute = app
 		};
 
 		messages.splice(index, 1);
-		server.publish(topic, JSON.stringify(data));
+		server?.publish(topic, JSON.stringify(data));
 
-		return c.json({ ok: true });
+		return { ok: true };
 	})
-	.get(
-		"/ws",
-		upgradeWebSocket((c) => {
-			return {
-				onOpen: (_, ws) => {
-					const rawWs = ws.raw as ServerWebSocket;
-					rawWs.subscribe(topic);
+	.listen(8080);
 
-					console.log(
-						`WebSocket server opened and subscribed to topic '${topic}'`,
-					);
-				},
-				onMessage(evt, ws) {
-					const rawWs = ws.raw as ServerWebSocket;
-
-					rawWs.publish(topic, JSON.stringify(evt.data));
-				},
-				onClose: (_, ws) => {
-					const rawWs = ws.raw as ServerWebSocket;
-					rawWs.unsubscribe(topic);
-
-					console.log(
-						`WebSocket server closed and unsubscribed from topic '${topic}'`,
-					);
-				},
-			};
-		}),
-	);
-
-export default {
-	fetch: app.fetch,
-	reusePort: true,
-	port: 8080,
-	websocket,
-};
-export type AppType = typeof messageRoute;
+export type AppType = typeof app;

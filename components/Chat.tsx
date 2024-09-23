@@ -1,26 +1,25 @@
 "use client";
-import {
-	$getMessages,
-	$postMessages,
-	useHonoSocket,
-} from "@/providers/HonoSocket";
-import { publishActions } from "@/types/Constants";
-import type { DataToSend, Message } from "@/types/types";
+import { $getMessages, $postMessages, useSocket } from "@/providers/Socket";
+import type { Message } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 export default function Chat() {
-	const socket = useHonoSocket();
+	const socket = useSocket();
 	const [message, setMessage] = useState("");
 	const { data, isSuccess, refetch } = useQuery<Message[]>({
 		queryKey: ["messages"],
 		initialData: [],
 		queryFn: async () => {
-			const data = await $getMessages();
+			const { data: resData, error } = await $getMessages();
 
-			return data.json();
+			if (error) {
+				console.log("something went wrong");
+			}
+
+			return resData ?? [];
 		},
 	});
 	const messagesRef = useRef<HTMLOListElement>(null);
@@ -46,10 +45,8 @@ export default function Chat() {
 			setMessage("");
 
 			await $postMessages({
-				json: {
-					id: isSuccess ? data.length + 1 : Math.floor(Math.random() * 100),
-					text: message,
-				},
+				id: isSuccess ? data.length + 1 : Math.floor(Math.random() * 100),
+				text: message,
 			});
 			await refetch();
 

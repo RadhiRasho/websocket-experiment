@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useHonoSocket } from "@/providers/HonoSocket";
+import { useSocket } from "@/providers/Socket";
 import type { Room, User } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useReadLocalStorage } from "usehooks-ts";
 
 export default function Home() {
-	const socket = useHonoSocket();
+	const socket = useSocket();
 	const [rooms, setRooms] = useState<Room[]>([]);
 	const [createName, setCreateName] = useState("");
 	const [createError, setCreateError] = useState<Error | null>(null);

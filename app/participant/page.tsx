@@ -1,10 +1,10 @@
 "use client";
 import Chat from "@/components/Chat";
-import { useHonoSocket } from "@/providers/HonoSocket";
+import { useSocket } from "@/providers/Socket";
 import { useEffect, useRef, useState } from "react";
 
 export default function View() {
-	const socket = useHonoSocket();
+	const socket = useSocket();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [base64Image, setBase64Image] = useState<string>("");
 
