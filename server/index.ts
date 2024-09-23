@@ -1,5 +1,10 @@
-import { FRONTEND_DEV_URL, publishActions } from "@/types/Constants";
-import type { DataToSend, Message } from "@/types/types";
+import { DataToSendSchema } from "@/types/typebox";
+import {
+	FRONTEND_DEV_URL,
+	publishActions,
+	type DataToSend,
+	type Message,
+} from "@/types/types";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
@@ -8,23 +13,25 @@ const topic = "chat-room";
 
 const app = new Elysia()
 	.use(cors({ origin: FRONTEND_DEV_URL }))
+	.get("/", "Hello, World!")
 	.ws("/ws", {
+		body: DataToSendSchema,
+		message(ws, message) {
+			console.log(message);
+			ws.publish(topic, message);
+		},
 		open(ws) {
 			ws.subscribe(topic);
 
 			console.log(`WebSocket server opened and subscribed to topic '${topic}'`);
 		},
-		message(ws, message) {
-			ws.publish(topic, JSON.stringify(message));
-		},
-		close(ws, code, message) {
+		close(ws) {
 			ws.unsubscribe(topic);
 			console.log(
 				`WebSocket server closed and unsubscribed from topic '${topic}'`,
 			);
 		},
 	})
-	.get("/", (c) => "Hello, World!")
 	.get("/messages", () => messages)
 	.post("/messages", async ({ request, server }) => {
 		const { id, text } = await request.json();
@@ -37,8 +44,8 @@ const app = new Elysia()
 		};
 
 		const data: DataToSend = {
-			action: publishActions.UPDATE_CHAT,
-			message: message,
+			type: publishActions.UPDATE_CHAT,
+			data: message,
 		};
 
 		messages.push(message);
@@ -58,8 +65,8 @@ const app = new Elysia()
 		}
 
 		const data: DataToSend = {
-			action: publishActions.DELETE_CHAT,
-			message: messages[index],
+			type: publishActions.DELETE_CHAT,
+			data: messages[index],
 		};
 
 		messages.splice(index, 1);
@@ -67,6 +74,11 @@ const app = new Elysia()
 
 		return { ok: true };
 	})
+	.onError(({ error }) => {
+		console.error(error);
+	})
 	.listen(8080);
+
+console.log(`🦊 is listening at ${app.server?.url}`);
 
 export type AppType = typeof app;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSocket } from "@/providers/Socket";
+import { type DataToSend, publishActions } from "@/types/types";
 import {
 	type PointerEvent,
 	useCallback,
@@ -29,6 +30,8 @@ export default function Canvas() {
 		y: 0,
 	});
 	const [size, setSize] = useState(25);
+	    const previousDataUrlRef = useRef<string | null>(null);
+
 
 	const resize = useCallback(() => {
 		const container = document.getElementById("canvasContainer");
@@ -105,16 +108,40 @@ export default function Canvas() {
 		}
 	}
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (socket?.readyState === WebSocket.OPEN) {
-			if (ctx?.canvas && socket?.send) {
-				socket.send(
-					JSON.stringify({ type: "canvas", data: ctx.canvas.toDataURL() }),
-				);
+	 useEffect(() => {
+			if (socket?.ws?.readyState === WebSocket.OPEN) {
+				const sendCanvasData = () => {
+					if (ctx?.canvas && socket?.send) {
+						const currentDataUrl = ctx.canvas.toDataURL();
+						if (currentDataUrl !== previousDataUrlRef.current) {
+							const data: DataToSend = {
+								type: "UPDATE_CANVAS",
+								data: currentDataUrl,
+							};
+							socket.send(JSON.stringify(data));
+							previousDataUrlRef.current = currentDataUrl;
+						}
+					}
+					requestAnimationFrame(sendCanvasData);
+				};
+
+				const observer = new MutationObserver(sendCanvasData);
+				if (ctx?.canvas) {
+					observer.observe(ctx.canvas, {
+						attributes: true,
+						childList: true,
+						subtree: true,
+					});
+				}
+
+				sendCanvasData(); // Start the loop
+
+				return () => {
+					observer.disconnect();
+				};
 			}
-		}
-	}, [socket?.emit, ctx?.canvas?.toDataURL(), ctx?.canvas, socket]);
+		}, [socket?.send, ctx?.canvas, socket?.ws?.readyState]);
+
 
 	return (
 		<>

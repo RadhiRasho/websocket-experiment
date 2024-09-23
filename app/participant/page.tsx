@@ -1,6 +1,7 @@
 "use client";
 import Chat from "@/components/Chat";
 import { useSocket } from "@/providers/Socket";
+import { publishActions, type DataToSend } from "@/types/types";
 import { useEffect, useRef, useState } from "react";
 
 export default function View() {
@@ -29,12 +30,15 @@ export default function View() {
 	}, [base64Image]);
 
 	useEffect(() => {
-		if (socket) {
-			socket.onmessage = (event) => {
-				setBase64Image(event.data);
-			};
+		if (socket && "on" in socket) {
+			socket?.on("message", (event) => {
+				const data = event.data as DataToSend;
+				if (data.type === publishActions.UPDATE_CANVAS) {
+					setBase64Image(data.data);
+				}
+			});
 		}
-	}, [socket]);
+	}, [socket, socket?.on]);
 
 	return (
 		<main className="flex flex-col items-center justify-start gap-2 p-4">

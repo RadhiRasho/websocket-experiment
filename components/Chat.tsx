@@ -1,6 +1,6 @@
 "use client";
 import { $getMessages, $postMessages, useSocket } from "@/providers/Socket";
-import type { Message } from "@/types/types";
+import { type DataToSend, type Message, publishActions } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
@@ -36,12 +36,12 @@ export default function Chat() {
 		if (message.length === 0) {
 		}
 
-		if (!socket || socket.readyState !== WebSocket.OPEN) {
+		if (!socket || socket.ws?.readyState !== WebSocket.OPEN) {
 			console.log("socket not open");
 			return;
 		}
 
-		if (socket.readyState === WebSocket.OPEN) {
+		if (socket.ws?.readyState === WebSocket.OPEN) {
 			setMessage("");
 
 			await $postMessages({
@@ -55,39 +55,44 @@ export default function Chat() {
 			});
 		}
 	}
-
 	if (!socket) {
 		return <div>Connecting...</div>;
 	}
 
-	// socket.onmessage = async (event) => {
-	// 	const data: DataToSend = JSON.parse(event.data) satisfies DataToSend;
-	// 	if (data.action === publishActions.UPDATE_CHAT) {
-	// 		await refetch();
-	// 		messagesRef.current?.lastElementChild?.scrollIntoView({
-	// 			behavior: "smooth",
-	// 		});
-	// 	}
-	// };
+
+	useEffect(() => {
+		if ("on" in socket) {
+			socket.on("message", async (event) => {
+				const data: DataToSend = event.data as DataToSend;
+				if (data.type === publishActions.UPDATE_CHAT) {
+					await refetch();
+					messagesRef.current?.lastElementChild?.scrollIntoView({
+						behavior: "smooth",
+					});
+				}
+			});
+		}
+	}, [refetch, socket]);
 
 	return (
-		<div className="flex flex-col justify-between items-center min-h-[80vh] h-full max-h-min border border-gray-500">
+		<div className="flex flex-col justify-between items-center !min-h-[80vh] h-full max-h-[80vh] border border-gray-500">
 			<h1>Chat</h1>
 			<div className="flex justify-between flex-col items-start">
 				<div className="border-t border-gray-500 w-full flex flex-col justify-between">
-					<div className="p-2 overflow-auto">
-						<ol ref={messagesRef}>
-							{data?.map((item, index) => {
-								return (
-									<li key={`${item.id}-${index}`} className={"list-none"}>
-										{item.id}: {item.text}
-									</li>
-								);
-							})}
-						</ol>
-					</div>
+					<ol
+						className="p-2 overflow-auto h-fit max-h-[70vh]"
+						ref={messagesRef}
+					>
+						{data?.map((item, index) => {
+							return (
+								<li key={`${item.id}-${index}`} className={"list-none"}>
+									{item.id}: {item.text}
+								</li>
+							);
+						})}
+					</ol>
 				</div>
-				<div className="flex justify-between gap-2 m-2">
+				<div className="flex justify-between gap-2 p-2 border-t border-gray-500">
 					<Input
 						type="text"
 						onKeyDown={(e) => {

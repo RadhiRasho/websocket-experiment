@@ -1,18 +1,19 @@
 "use client";
 import type { AppType } from "@/server";
-import { BACKEND_DEV_URL, BACKEND_DEV_WS_URL } from "@/types/Constants";
+import { BACKEND_DEV_URL } from "@/types/types";
 import { treaty } from "@elysiajs/eden";
+import type { EdenWS } from "@elysiajs/eden/treaty";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const SocketContext = createContext<WebSocket | null>(null);
+export const SocketContext = createContext<EdenWS | null>(null);
 
 type SocketProps = { children: ReactNode };
 
 const api = treaty<AppType>(BACKEND_DEV_URL);
 
 export function SocketProvider({ children }: SocketProps) {
-	const [ws, setWs] = useState<WebSocket>({} as WebSocket);
+	const [ws, setWs] = useState<EdenWS>({} as EdenWS);
 
 	useEffect(() => {
 		const socket = api.ws.subscribe();
@@ -20,7 +21,7 @@ export function SocketProvider({ children }: SocketProps) {
 		socket.on("open", () => {
 			console.log("Socket Opened");
 
-			setWs(socket as unknown as WebSocket);
+			setWs(socket as unknown as EdenWS);
 		});
 	}, []);
 
