@@ -9,7 +9,9 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useDebounceCallback, useResizeObserver } from "usehooks-ts";
 import Chat from "./Chat";
+import { Slider } from "./ui/slider";
 
 export default function Canvas() {
 	const socket = useSocket();
@@ -25,32 +27,47 @@ export default function Canvas() {
 		"black",
 	];
 	const [color, setColor] = useState(colors[0]);
-	const [previous, setPrevious] = useState<{ x: number; y: number }>({
+	const [previous, setPrevious] = useState<{ x: number; y: number } | null>({
 		x: 0,
 		y: 0,
 	});
-	const [size, setSize] = useState(25);
+	const [size, setSize] = useState<number[]>([25]);
 	const previousDataUrlRef = useRef<string | null>(null);
 
 	const resize = useCallback(() => {
 		const container = document.getElementById("canvasContainer");
 		if (canvasRef.current && container) {
-			canvasRef.current.width = container?.clientWidth;
-			canvasRef.current.height = container?.clientHeight;
+			// Save the current canvas content
+			const dataUrl = canvasRef.current.toDataURL();
+			previousDataUrlRef.current = dataUrl;
+
+			// Resize the canvas
+			canvasRef.current.width = container.clientWidth;
+			canvasRef.current.height = container.clientHeight;
+
+			// Restore the canvas content
+			const img = new Image();
+			img.src = previousDataUrlRef.current;
+			img.onload = () => {
+				if (ctx) {
+					ctx.drawImage(img, 0, 0);
+				}
+			};
 		}
-	}, []);
+	}, [ctx]);
+
+	const onResize = useDebounceCallback(resize, 100);
+
+	useResizeObserver<HTMLCanvasElement>({
+		ref: canvasRef,
+		onResize,
+	});
 
 	useEffect(() => {
 		if (canvasRef.current) {
-			resize();
 			setCtx(canvasRef.current.getContext("2d"));
-			window.addEventListener("resize", resize);
 		}
-
-		return () => {
-			window.removeEventListener("resize", resize);
-		};
-	}, [resize]);
+	}, []);
 
 	function getCoords(e: PointerEvent<HTMLCanvasElement>) {
 		const { clientX, clientY } = e;
@@ -69,36 +86,45 @@ export default function Canvas() {
 	function mouseDown(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = getCoords(e);
 
-		if (ctx) {
-			ctx.fillStyle = color ?? "black";
-			ctx.beginPath();
-			ctx.arc(coords.x, coords.y, size / 2, 0, 2 * Math.PI);
-			ctx.fill();
+		if (!ctx) return;
 
-			setPrevious(coords);
-		}
+		const fillColor = color ?? "black";
+		const radius = size / (size < 10 ? 2 : 4);
+
+		ctx.fillStyle = fillColor;
+		ctx.beginPath();
+		ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI, true);
+		ctx.fill();
+
+		setPrevious(coords);
 	}
-
-	useEffect(() => {
-		if (ctx) {
-			ctx.strokeStyle = color ?? "black";
-			ctx.lineWidth = size;
-			ctx.lineCap = "round";
-		}
-	}, [color, ctx, size]);
 
 	function pointerMove(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = getCoords(e);
 		if (ctx && e.buttons === 1) {
 			ctx.strokeStyle = color ?? "black";
-			ctx.lineWidth = size;
+			ctx.lineWidth = size[0] ?? 1;
 			ctx.lineCap = "round";
-			ctx?.beginPath();
-			ctx?.moveTo(previous?.x, previous?.y);
-			ctx?.lineTo(coords.x, coords.y);
-			ctx?.stroke();
+
+			if (previous) {
+				const steps = 10;
+				for (let i = 0; i <= steps; i++) {
+					const t = i / steps;
+					const x = previous.x + t * (coords.x - previous.x);
+					const y = previous.y + t * (coords.y - previous.y);
+					ctx.beginPath();
+					ctx.moveTo(previous.x, previous.y);
+					ctx.lineTo(x, y);
+					ctx.stroke();
+				}
+			}
+
+			setPrevious(coords);
 		}
-		setPrevious(coords);
+	}
+
+	function mouseUp() {
+		setPrevious(null);
 	}
 
 	function clear() {
@@ -106,6 +132,14 @@ export default function Canvas() {
 			ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 		}
 	}
+
+	useEffect(() => {
+		if (ctx) {
+			ctx.strokeStyle = color ?? "black";
+			ctx.lineWidth = size[0] ?? 1;
+			ctx.lineCap = "round";
+		}
+	}, [color, ctx, size]);
 
 	useEffect(() => {
 		if (socket?.ws?.readyState === WebSocket.OPEN) {
@@ -143,7 +177,7 @@ export default function Canvas() {
 
 	return (
 		<>
-			<div className="flex justify-between items-center gap-10">
+			<div className="flex justify-between items-center gap-10 w-full">
 				<div className="grid grid-cols-8">
 					{colors.map((indexColor) => (
 						<button
@@ -163,31 +197,33 @@ export default function Canvas() {
 						clear
 					</button>
 				</div>
-				<div className="flex justify-between gap-2">
+				<div className="flex justify-between gap-2 w-[20%]">
 					<span>1</span>
-					<input
-						className="flex items-center"
-						type="range"
-						min="1"
-						max="100"
+					<Slider
+						defaultValue={[10, 90]}
 						value={size}
-						onChange={(e) => setSize(+e.target.value)}
+						minStepsBetweenThumbs={1}
+						max={100}
+						min={1}
+						step={1}
+						onValueChange={setSize}
 					/>
 					<span>100</span>
 				</div>
 			</div>
 			<div className="flex justify-between w-full max-h-[80vh] gap-2">
-				<div id="canvasContainer" className="w-full max-w-[90%]">
-					<div>
+				<div className="flex justify-between w-full max-h-[80vh] gap-2">
+					<div id="canvasContainer" className="w-full max-w-[90%]">
 						<canvas
 							onPointerMove={pointerMove}
 							onPointerDown={mouseDown}
-							className="border border-gray-500 bg-black"
+							onPointerUp={mouseUp}
+							className="border border-gray-500 bg-black h-full w-full"
 							ref={canvasRef}
 						/>
 					</div>
+					<Chat />
 				</div>
-				<Chat />
 			</div>
 		</>
 	);

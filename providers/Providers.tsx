@@ -15,12 +15,7 @@ export default function Providers({
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<ThemeProvider
-				attribute="class"
-				defaultTheme="system"
-				enableSystem
-				forcedTheme={"dark"}
-			>
+			<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 				<UserProvider>
 					<SocketProvider>
 						<div className="h-full max-h-screen">
