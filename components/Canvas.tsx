@@ -1,7 +1,7 @@
 "use client";
 
-import { useSocket } from "@/providers/Socket";
-import { type DataToSend, publishActions } from "@/types/types";
+import { socketUrl } from "@/providers/Socket";
+import type { DataToSend } from "@/types/typebox";
 import {
 	type PointerEvent,
 	useCallback,
@@ -9,12 +9,13 @@ import {
 	useRef,
 	useState,
 } from "react";
+import useWebSocket from "react-use-websocket";
 import { useDebounceCallback, useResizeObserver } from "usehooks-ts";
 import Chat from "./Chat";
 import { Slider } from "./ui/slider";
 
 export default function Canvas() {
-	const socket = useSocket();
+	const { readyState, sendJsonMessage } = useWebSocket(socketUrl);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 	const colors: string[] = [
@@ -89,7 +90,7 @@ export default function Canvas() {
 		if (!ctx) return;
 
 		const fillColor = color ?? "black";
-		const radius = size / (size < 10 ? 2 : 4);
+		const radius = (size[0] ?? 1) / ((size[0] ?? 1) < 10 ? 2 : 4);
 
 		ctx.fillStyle = fillColor;
 		ctx.beginPath();
@@ -142,16 +143,16 @@ export default function Canvas() {
 	}, [color, ctx, size]);
 
 	useEffect(() => {
-		if (socket?.ws?.readyState === WebSocket.OPEN) {
+		if (readyState === WebSocket.OPEN) {
 			const sendCanvasData = () => {
-				if (ctx?.canvas && socket?.send) {
+				if (ctx?.canvas) {
 					const currentDataUrl = ctx.canvas.toDataURL();
 					if (currentDataUrl !== previousDataUrlRef.current) {
 						const data: DataToSend = {
 							type: "UPDATE_CANVAS",
 							data: currentDataUrl,
 						};
-						socket.send(JSON.stringify(data));
+						sendJsonMessage(data);
 						previousDataUrlRef.current = currentDataUrl;
 					}
 				}
@@ -173,7 +174,7 @@ export default function Canvas() {
 				observer.disconnect();
 			};
 		}
-	}, [socket?.send, ctx?.canvas, socket?.ws?.readyState]);
+	}, [ctx?.canvas, readyState, sendJsonMessage]);
 
 	return (
 		<>

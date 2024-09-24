@@ -1,11 +1,13 @@
 "use client";
+
 import Chat from "@/components/Chat";
-import { useSocket } from "@/providers/Socket";
-import { type DataToSend, publishActions } from "@/types/types";
+import { socketUrl } from "@/providers/Socket";
+import { type DataToSend, publishActions } from "@/types/typebox";
 import { useEffect, useRef, useState } from "react";
+import useWebSocket from "react-use-websocket";
 
 export default function View() {
-	const socket = useSocket();
+	const { lastMessage } = useWebSocket(socketUrl);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [base64Image, setBase64Image] = useState<string>("");
 
@@ -30,15 +32,14 @@ export default function View() {
 	}, [base64Image]);
 
 	useEffect(() => {
-		if (socket && "on" in socket) {
-			socket?.on("message", (event) => {
-				const data = event.data as DataToSend;
-				if (data.type === publishActions.UPDATE_CANVAS) {
-					setBase64Image(data.data);
-				}
-			});
+		const data = lastMessage?.data as DataToSend;
+
+		if (typeof data !== "string" && "type" in data) {
+			if (data.type === publishActions.UPDATE_CANVAS) {
+				setBase64Image(data.data);
+			}
 		}
-	}, [socket, socket?.on]);
+	}, [lastMessage]);
 
 	return (
 		<main className="flex flex-col items-center justify-start gap-2 p-4">

@@ -1,10 +1,19 @@
 import { type Static, t } from "elysia";
-import { publishActions } from "./types";
+
+export const FRONTEND_DEV_URL = "http://localhost:3000";
+export const BACKEND_DEV_URL = "http://localhost:8080";
+export const BACKEND_DEV_WS_URL = "ws://localhost:8080/ws";
+
+export const publishActions = {
+	UPDATE_CHAT: "UPDATE_CHAT",
+	DELETE_CHAT: "DELETE_CHAT",
+	UPDATE_CANVAS: "UPDATE_CANVAS",
+} as const;
 
 export const MessageSchema = t.Object({
-	id: t.Number(),
+	id: t.String(),
 	text: t.String(),
-	date: t.String(),
+	date: t.Optional(t.String()),
 });
 
 export type Message = Static<typeof MessageSchema>;
@@ -40,11 +49,45 @@ const UpdateCanvasSchema = t.Object({
 	data: t.String(),
 });
 
+const PingMessageSchema = t.String();
+
 // Combine them into a union type
 export const DataToSendSchema = t.Union([
 	UpdateChatSchema,
 	DeleteChatSchema,
 	UpdateCanvasSchema,
+	PingMessageSchema,
 ]);
 
 export type DataToSend = Static<typeof DataToSendSchema>;
+
+// Assuming the User type is defined as follows:
+export const UserSchema = t.Object({
+	id: t.String(),
+	name: t.String(),
+	role: t.String(),
+});
+
+export type User = Static<typeof UserSchema>;
+
+export const UsersSchema = t.Array(UserSchema);
+
+export type Users = Static<typeof UsersSchema>;
+
+export const RoomSchema = t.Object({
+	name: t.String({ maxLength: 255 }),
+	drawer: UserSchema,
+	users: t.Optional(t.Array(UserSchema)),
+	word: t.String(),
+	hints: t.Optional(
+		t.Array(t.String(), {
+			minItems: 3,
+		}),
+	),
+});
+
+export type Room = Static<typeof RoomSchema>;
+
+export const RoomsSchema = t.Array(RoomSchema);
+
+export type Rooms = Static<typeof RoomsSchema>;
