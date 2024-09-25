@@ -1,10 +1,9 @@
 "use client";
 
 import { RoomCard } from "@/components/Room";
-import { Button } from "@/components/ui/button";
+import { RoomCreation } from "@/components/RoomCreation";
 import { $getRooms } from "@/providers/Socket";
-import type { Rooms } from "@/types/typebox";
-import type { User } from "@/types/types";
+import type { Room, Rooms, User } from "@/types/typebox";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -28,15 +27,15 @@ export default function Home() {
 		},
 	});
 
+	async function createRoom(info: Room) {
+		console.log(info);
+	}
+
 	useEffect(() => {
 		if (!user) {
 			router.push("login");
 		}
 	}, [router, user]);
-
-	async function createRoom() {
-		console.log("clicked");
-	}
 
 	async function join(name: string) {
 		console.log(name);
@@ -44,11 +43,7 @@ export default function Home() {
 
 	return (
 		<main className="flex flex-col items-center justify-start gap-2 p-4">
-			<div className="grid gap-2 max-w-sm w-full">
-				<Button type="button" onClick={createRoom}>
-					Create
-				</Button>
-			</div>
+			<RoomCreation onCreate={createRoom} />
 			<br />
 			<span className="text-[2rem]">Live Rooms</span>
 			<div className="grid grid-flow-row grid-cols-4 gap-2">

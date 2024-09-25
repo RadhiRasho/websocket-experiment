@@ -1,8 +1,4 @@
-export type User = {
-	id: string;
-	name: string;
-	role: string;
-};
+import type { User } from "./typebox";
 
 export type UserContext = {
 	user: User | null;

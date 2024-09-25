@@ -91,3 +91,21 @@ export type Room = Static<typeof RoomSchema>;
 export const RoomsSchema = t.Array(RoomSchema);
 
 export type Rooms = Static<typeof RoomsSchema>;
+
+export const RoomCreationSchema = t.Object({
+	name: t.String({
+		maxLength: 255,
+		minLength: 1,
+		error: { minLength: "Room Name is required" },
+	}),
+	word: t.String({ error: "Word is required", minLength: 1 }),
+	hints: t.Optional(
+		t.Array(t.String(), {
+			minItems: 3,
+			error: "At least 3 hints are required",
+		}),
+	),
+	password: t.Optional(t.String(), true),
+});
+
+export type RoomCreation = Static<typeof RoomCreationSchema>;
