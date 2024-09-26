@@ -1,5 +1,6 @@
 "use client";
-import type { User, UserContext as uContext } from "@/types/types";
+import type { User } from "@/types/typebox";
+import type { UserContext as uContext } from "@/types/types";
 import { type ReactNode, createContext, useContext } from "react";
 import { useLocalStorage } from "usehooks-ts";
 

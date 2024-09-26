@@ -15,7 +15,7 @@ type Props = {
 	onCreate: (info: Room) => void;
 };
 
-export function RoomCreation({}: Props) {
+export function RoomCreation({ onCreate }: Props) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>

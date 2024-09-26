@@ -1,15 +1,12 @@
 import {
-	type DataToSend,
 	DataToSendSchema,
 	FRONTEND_DEV_URL,
-	type Message,
 	MessageSchema,
-	type Room,
 	RoomSchema,
-	type Rooms,
 	RoomsSchema,
 	publishActions,
 } from "@/types/typebox";
+import type { DataToSend, Message, Room, Rooms } from "@/types/typebox";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 

@@ -19,7 +19,8 @@
 		"enabled": true
 	},
 	"files": {
-		"ignoreUnknown": true
+		"ignoreUnknown": true,
+		"ignore": ["./components/ui"]
 	},
 	"vcs": {
 		"enabled": true,
