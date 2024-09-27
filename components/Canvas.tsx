@@ -186,7 +186,7 @@ export default function Canvas() {
 	return (
 		<div className="flex-col items-center gap-10 w-full">
 			<div className="flex justify-between w-full">
-				<div className="grid grid-cols-8 gap-2">
+				<div className="grid grid-cols-8 gap-2 min-h-fit h-full">
 					{colors.map((indexColor) => (
 						<button
 							type="button"
@@ -203,20 +203,16 @@ export default function Canvas() {
 							{indexColor === color && !eraserActive && "✓"}
 						</button>
 					))}
-					<button
-						type="button"
-						className={`rounded-full p-2 ${eraserActive && "text-red-500"}`}
+					<Eraser
+						className={`rounded-full p-2 ${eraserActive && "text-red-500"} hover:text-red-500 hover:cursor-pointer`}
 						onClick={() => setEraserActive(true)}
-					>
-						<Eraser />
-					</button>
-					<button
-						type="button"
-						className="rounded-full p-2 hover:text-red-500"
+						size={45}
+					/>
+					<Trash
+						className="rounded-full p-2 hover:text-red-500 hover:cursor-pointer"
 						onClick={clear}
-					>
-						<Trash />
-					</button>
+						size={45}
+					/>
 				</div>
 				<div className="flex justify-between items-center gap-2 w-[20%]">
 					<span>1</span>
