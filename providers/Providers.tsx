@@ -14,7 +14,7 @@ export default function Providers({
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+			<ThemeProvider attribute="class" defaultTheme="dark">
 				<UserProvider>
 					<div className="h-full max-h-screen">
 						<Navbar />

@@ -2,6 +2,7 @@
 
 import { socketUrl } from "@/providers/Socket";
 import type { DataToSend } from "@/types/typebox";
+import { Eraser, Trash } from "lucide-react";
 import {
 	type PointerEvent,
 	useCallback,
@@ -11,13 +12,13 @@ import {
 } from "react";
 import useWebSocket from "react-use-websocket";
 import { useDebounceCallback, useResizeObserver } from "usehooks-ts";
-import Chat from "./Chat";
 import { Slider } from "./ui/slider";
 
 export default function Canvas() {
 	const { readyState, sendJsonMessage } = useWebSocket(socketUrl);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+	const [eraserActive, setEraserActive] = useState(false);
 	const colors: string[] = [
 		"red",
 		"green",
@@ -25,7 +26,6 @@ export default function Canvas() {
 		"yellow",
 		"violet",
 		"orange",
-		"black",
 	];
 	const [color, setColor] = useState(colors[0]);
 	const [previous, setPrevious] = useState<{ x: number; y: number } | null>({
@@ -62,6 +62,7 @@ export default function Canvas() {
 	useResizeObserver<HTMLCanvasElement>({
 		ref: canvasRef,
 		onResize,
+		box: "border-box",
 	});
 
 	useEffect(() => {
@@ -89,10 +90,13 @@ export default function Canvas() {
 
 		if (!ctx) return;
 
-		const fillColor = color ?? "black";
+		const fillColor = (eraserActive ? "rgba(0,0,0,1)" : color) ?? "black";
 		const radius = (size[0] ?? 1) / ((size[0] ?? 1) < 10 ? 2 : 4);
 
 		ctx.fillStyle = fillColor;
+		ctx.globalCompositeOperation = eraserActive
+			? "destination-out"
+			: "source-over";
 		ctx.beginPath();
 		ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI, true);
 		ctx.fill();
@@ -103,9 +107,12 @@ export default function Canvas() {
 	function pointerMove(e: PointerEvent<HTMLCanvasElement>) {
 		const coords = getCoords(e);
 		if (ctx && e.buttons === 1) {
-			ctx.strokeStyle = color ?? "black";
+			ctx.strokeStyle = eraserActive ? "rgba(0,0,0,1)" : (color ?? "black");
 			ctx.lineWidth = size[0] ?? 1;
 			ctx.lineCap = "round";
+			ctx.globalCompositeOperation = eraserActive
+				? "destination-out"
+				: "source-over";
 
 			if (previous) {
 				const steps = 10;
@@ -177,28 +184,41 @@ export default function Canvas() {
 	}, [ctx?.canvas, readyState, sendJsonMessage]);
 
 	return (
-		<>
-			<div className="flex justify-between items-center gap-10 w-full">
-				<div className="grid grid-cols-8">
+		<div className="flex-col items-center gap-10 w-full">
+			<div className="flex justify-between w-full">
+				<div className="grid grid-cols-8 gap-2">
 					{colors.map((indexColor) => (
 						<button
 							type="button"
 							title={indexColor}
 							key={indexColor}
-							className={`rounded-full w-[2.6rem] h-full text-4xl ${
-								indexColor === "black" ? "text-white" : "text-black"
-							} border border-white`}
+							className={`rounded-full w-[2.6rem] h-full text-4xl border border-primary
+                                 ${indexColor === "black" ? "text-white" : "text-black"}`}
 							style={{ backgroundColor: indexColor }}
-							onClick={() => setColor(indexColor)}
+							onClick={() => {
+								setColor(indexColor);
+								setEraserActive(false);
+							}}
 						>
-							{indexColor === color && "✓"}
+							{indexColor === color && !eraserActive && "✓"}
 						</button>
 					))}
-					<button type="button" className="rounded-full p-2" onClick={clear}>
-						clear
+					<button
+						type="button"
+						className={`rounded-full p-2 ${eraserActive && "text-red-500"}`}
+						onClick={() => setEraserActive(true)}
+					>
+						<Eraser />
+					</button>
+					<button
+						type="button"
+						className="rounded-full p-2 hover:text-red-500"
+						onClick={clear}
+					>
+						<Trash />
 					</button>
 				</div>
-				<div className="flex justify-between gap-2 w-[20%]">
+				<div className="flex justify-between items-center gap-2 w-[20%]">
 					<span>1</span>
 					<Slider
 						defaultValue={[10, 90]}
@@ -212,20 +232,19 @@ export default function Canvas() {
 					<span>100</span>
 				</div>
 			</div>
-			<div className="flex justify-between w-full max-h-[80vh] gap-2">
-				<div className="flex justify-between w-full max-h-[80vh] gap-2">
-					<div id="canvasContainer" className="w-full max-w-[90%]">
-						<canvas
-							onPointerMove={pointerMove}
-							onPointerDown={mouseDown}
-							onPointerUp={mouseUp}
-							className="border border-gray-500 bg-black h-full w-full"
-							ref={canvasRef}
-						/>
-					</div>
-					<Chat />
-				</div>
+			<br />
+			<div
+				id="canvasContainer"
+				className="w-full min-h-[71vh] h-full max-h-[71vh]"
+			>
+				<canvas
+					onPointerMove={pointerMove}
+					onPointerDown={mouseDown}
+					onPointerUp={mouseUp}
+					className="border border-gray-500 h-full w-full"
+					ref={canvasRef}
+				/>
 			</div>
-		</>
+		</div>
 	);
 }

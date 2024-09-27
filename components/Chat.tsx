@@ -48,7 +48,7 @@ export default function Chat() {
 		}
 
 		if (readyState !== ReadyState.OPEN) {
-			console.log("socket not open");
+			console.log("Socket Not Ready");
 			return;
 		}
 
@@ -82,14 +82,13 @@ export default function Chat() {
 	}, [refetch, lastMessage]);
 
 	return (
-		<div className="flex flex-col justify-between items-center !min-h-[80vh] h-full max-h-[80vh] border border-gray-500">
-			<h1>Chat</h1>
+		<div className="flex flex-col justify-between min-h-[80vh] h-full border border-gray-500">
+			<h1 className="border border-b-gray-500 w-full text-center shadow shadow-white">
+				Chat
+			</h1>
 			<div className="flex justify-between flex-col items-start">
-				<div className="border-t border-gray-500 w-full flex flex-col justify-between">
-					<ol
-						className="p-2 overflow-auto h-fit max-h-[70vh]"
-						ref={messagesRef}
-					>
+				<div className="w-full flex flex-col justify-between">
+					<ol className="p-2 overflow-auto h-full" ref={messagesRef}>
 						{data?.map((item, index) => {
 							return (
 								<li key={`${item.id}-${index}`} className={"list-none"}>
