@@ -13,9 +13,20 @@ import { Input } from "@/components/ui/input";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useForm } from "react-hook-form";
 
-import { type RoomCreation, RoomCreationSchema } from "@/types/typebox";
+import { $postRooms } from "@/providers/Socket";
+import { useUserContext } from "@/providers/UserProvider";
+import {
+	type Room,
+	type RoomCreation,
+	RoomCreationSchema,
+} from "@/types/typebox";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export function RoomCreationForm() {
+	const router = useRouter();
+	const { user } = useUserContext();
+	const client = useQueryClient();
 	const form = useForm<RoomCreation>({
 		resolver: typeboxResolver(RoomCreationSchema),
 		defaultValues: {
@@ -25,11 +36,20 @@ export function RoomCreationForm() {
 		},
 	});
 
-	// 2. Define a submit handler.
 	function onSubmit(values: RoomCreation) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
+		if (!user) {
+			throw new Error("no User");
+		}
+
+		const room: Room = {
+			...values,
+			drawer: user,
+		};
+
+		$postRooms(room);
+		client.refetchQueries({ queryKey: ["Rooms"] });
+
+		router.push(`/drawer/${values.name}`);
 	}
 
 	return (
@@ -73,11 +93,7 @@ export function RoomCreationForm() {
 							<FormItem>
 								<FormLabel htmlFor="password">Password</FormLabel>
 								<FormControl>
-									<Input
-										type="password"
-										placeholder="Picaso's Playground"
-										{...field}
-									/>
+									<Input type="password" placeholder="******" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

@@ -14,7 +14,11 @@ import useWebSocket from "react-use-websocket";
 import { useDebounceCallback, useResizeObserver } from "usehooks-ts";
 import { Slider } from "./ui/slider";
 
-export default function Canvas() {
+type CanvasProps = {
+	room: string;
+};
+
+export default function Canvas({ room }: CanvasProps) {
 	const { readyState, sendJsonMessage } = useWebSocket(socketUrl);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
@@ -69,6 +73,8 @@ export default function Canvas() {
 		if (canvasRef.current) {
 			setCtx(canvasRef.current.getContext("2d"));
 		}
+
+		// sendJsonMessage({});
 	}, []);
 
 	function getCoords(e: PointerEvent<HTMLCanvasElement>) {

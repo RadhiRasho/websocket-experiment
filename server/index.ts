@@ -111,6 +111,8 @@ const app = new Elysia({
 		async ({ body }) => {
 			const room = body satisfies Room;
 
+			console.log(room);
+
 			rooms.push(room);
 
 			return { ok: true };

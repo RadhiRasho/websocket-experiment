@@ -10,10 +10,11 @@ type Props = {
 };
 
 export default function Home({ params }: Props) {
+	console.log(params);
 	return (
 		<main className="flex items-center justify-start gap-2 h-full max-h-[80vh] m-4">
-			<Canvas />
-			<Chat />
+			<Canvas room={params.room} />
+			<Chat room={params.room} />
 		</main>
 	);
 }

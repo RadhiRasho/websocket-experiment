@@ -23,7 +23,7 @@ export function RoomCreation({ onCreate }: Props) {
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create a room</DialogTitle>
+					<DialogTitle className="text-center">Create a room</DialogTitle>
 					<DialogDescription>
 						Enter the name of the room and the word to be guessed. You can also
 						optionally set a password for the room, as well as hints for the

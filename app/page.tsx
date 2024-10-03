@@ -50,7 +50,7 @@ export default function Home() {
 				{isSuccess &&
 					rooms.map((room) => (
 						<RoomCard
-							key={room.name}
+							key={`${room.name} ${room.word}`}
 							join={() => join(room.name)}
 							room={room}
 						/>

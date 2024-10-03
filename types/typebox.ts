@@ -84,6 +84,7 @@ export const RoomSchema = t.Object({
 			minItems: 3,
 		}),
 	),
+	password: t.Optional(t.String({ minLength: 3 })),
 });
 
 export type Room = Static<typeof RoomSchema>;
