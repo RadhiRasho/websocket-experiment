@@ -7,7 +7,11 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-export default function Chat() {
+type ChatProps = {
+	room: string;
+};
+
+export default function Chat({ room }: ChatProps) {
 	const { readyState, lastMessage } = useWebSocket(socketUrl, {
 		onOpen: () => console.log("Opened"),
 		shouldReconnect: (e) => true,
