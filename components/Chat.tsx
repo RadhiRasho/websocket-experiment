@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 type ChatProps = {
-	room: string;
+	room?: string;
 };
 
 export default function Chat({ room }: ChatProps) {

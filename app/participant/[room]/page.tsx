@@ -32,12 +32,22 @@ export default function View() {
 	}, [base64Image]);
 
 	useEffect(() => {
-		const data = lastMessage?.data as DataToSend;
+		if (
+			lastMessage === null ||
+			lastMessage.data === "pong" ||
+			lastMessage.data === "ping"
+		)
+			return;
+		try {
+			const data = JSON.parse(lastMessage?.data) as DataToSend;
 
-		if (typeof data !== "string" && "type" in data) {
-			if (data.type === publishActions.UPDATE_CANVAS) {
-				setBase64Image(data.data);
+			if (typeof data === "object" && "type" in data) {
+				if (data.type === publishActions.UPDATE_CANVAS) {
+					setBase64Image(data.data);
+				}
 			}
+		} catch (e) {
+			console.error(e);
 		}
 	}, [lastMessage]);
 
